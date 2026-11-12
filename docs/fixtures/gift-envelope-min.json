@@ -1,0 +1,18 @@
+{
+ "$comment": "Minimum GiftContentV1 (arch-web-react-motion.md §6.2): theme + recipient name + letter. Copy to src/gift-schema/fixtures/envelope-min.json at scaffold; M3 builds the recipient player against it. NFC text, no media.",
+ "mechanic": "envelope",
+ "theme": "garden-envelope",
+ "locale": "vi",
+ "names": { "from": "Minh", "to": "Bống", "self": "anh", "you": "em", "tone": "nha" },
+ "pages": [
+  {
+   "kind": "letter",
+   "greeting": "Gửi Bống,",
+   "body": "Hôm nay anh muốn nói với em một điều: cảm ơn em vì đã đến bên anh. Thương em nhiều lắm, đừng quên nụ cười này nha.",
+   "signature": "Minh",
+   "font": "handBody"
+  }
+ ],
+ "mediaRefs": [],
+ "finale": { "enabled": true }
+}

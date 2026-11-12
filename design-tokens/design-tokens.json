@@ -1,0 +1,1091 @@
+{
+ "$schema": "design-tokens (W3C DTCG-style, simplified: {value, evidence})",
+ "meta": {
+  "name": "Vietnamese gift card + self-photobooth visual system",
+  "version": "1.2.0",
+  "companion": "visual.md",
+  "units": "CSS px at 375px mobile unless noted; reference px measured at 1024w",
+  "ipRule": "visual language only; no reference art, brands, or licensed mascot"
+ },
+ "color": {
+  "cream": {
+   "50": {
+    "value": "#FFFDF8",
+    "evidence": "v4 sticker/polaroid #FEF8F7/#FEFDF9"
+   },
+   "100": {
+    "value": "#FBF6F3",
+    "evidence": "v1 status pill"
+   },
+   "200": {
+    "value": "#F9F8E8",
+    "evidence": "v1 wall stripe; palettes v1 #F8F8EB 32%"
+   },
+   "300": {
+    "value": "#FCECDD",
+    "evidence": "v4 gingham cream"
+   },
+   "400": {
+    "value": "#F0E7D6",
+    "evidence": "v5 landing 96.3%"
+   }
+  },
+  "paper": {
+   "letter": {
+    "value": "#FDF8F4",
+    "evidence": "v1 letter paper"
+   },
+   "page": {
+    "value": "#FEF7E5",
+    "evidence": "v5 Songs page"
+   }
+  },
+  "kraft": {
+   "300": {
+    "value": "#DAC6AA",
+    "evidence": "v5 envelope"
+   },
+   "500": {
+    "value": "#BCA486",
+    "evidence": "v5 kraft stain"
+   }
+  },
+  "butter": {
+   "200": {
+    "value": "#F8EBC1",
+    "evidence": "v5 sticky note"
+   }
+  },
+  "ink": {
+   "900": {
+    "value": "#3B272C",
+    "evidence": "v1 letter heading, 13.2:1 on paper"
+   },
+   "800": {
+    "value": "#4A3439",
+    "evidence": "v1 body, 10.8:1"
+   },
+   "700": {
+    "value": "#6F5F61",
+    "evidence": "v1 caption, 5.8:1"
+   },
+   "600": {
+    "value": "#7C5A63",
+    "evidence": "derived AA meta (ref #A98A93 = 2.95:1)"
+   },
+   "400": {
+    "value": "#A98A93",
+    "evidence": "v1 eyebrow; decorative only"
+   },
+   "green": {
+    "value": "#172211",
+    "evidence": "v5 title ink"
+   },
+   "night": {
+    "value": "#1C1817",
+    "evidence": "v3 true ink"
+   }
+  },
+  "blush": {
+   "50": {
+    "value": "#FDF3F5",
+    "evidence": "v1 countdown fill"
+   },
+   "100": {
+    "value": "#F8DBE3",
+    "evidence": "v1 sheer curtain"
+   },
+   "200": {
+    "value": "#F6C5CC",
+    "evidence": "v1 door panel"
+   },
+   "300": {
+    "value": "#F2C6C5",
+    "evidence": "v1 stripe; palettes v1 #EEC7C7 35.2%"
+   },
+   "400": {
+    "value": "#F5B8B3",
+    "evidence": "v4 gingham pink tile"
+   },
+   "500": {
+    "value": "#EBB1B7",
+    "evidence": "v1 cornice"
+   },
+   "600": {
+    "value": "#D996A0",
+    "evidence": "v1 booth body"
+   },
+   "700": {
+    "value": "#D9A1B8",
+    "evidence": "v4 washi"
+   },
+   "hint": {
+    "value": "#F6CBDC",
+    "evidence": "v1 #EDC5D7, v4 #FAD3E2, v5 #F6CBDC"
+   },
+   "ring": {
+    "value": "#DDB7C3",
+    "evidence": "v1 countdown ring"
+   }
+  },
+  "berry": {
+   "500": {
+    "value": "#9B4B68",
+    "evidence": "v1 countdown numeral"
+   },
+   "600": {
+    "value": "#8A3D63",
+    "evidence": "v1 signature"
+   },
+   "700": {
+    "value": "#843E55",
+    "evidence": "v1 sign script"
+   },
+   "800": {
+    "value": "#6E2340",
+    "evidence": "v4 true name ink"
+   }
+  },
+  "plum": {
+   "hintText": {
+    "value": "#5B3B4A",
+    "evidence": "v4 pill text"
+   },
+   "fab": {
+    "value": "#6F2748",
+    "evidence": "v1 FAB; v4 #6F2F44"
+   },
+   "fabGlyph": {
+    "value": "#F59AC7",
+    "evidence": "v1; v4 #F49EC5"
+   },
+   "panelTop": {
+    "value": "#49223D",
+    "evidence": "v4 drawer"
+   },
+   "panelMid": {
+    "value": "#31132B",
+    "evidence": "v4 drawer"
+   },
+   "panelBottom": {
+    "value": "#120415",
+    "evidence": "v4; v1 #130214; v5 #110012"
+   },
+   "bezel": {
+    "value": "#3D303A",
+    "evidence": "v4 bezel"
+   },
+   "panelTitle": {
+    "value": "#FFE8F8",
+    "evidence": "v1 bouquet title"
+   }
+  },
+  "lilac": {
+   "400": {
+    "value": "#C293BD",
+    "evidence": "v1 floor"
+   },
+   "700": {
+    "value": "#763C71",
+    "evidence": "v1 deep plum"
+   }
+  },
+  "accent": {
+   "forest": {
+    "value": "#275330",
+    "evidence": "v1/v4 play; v5 #234A30"
+   },
+   "forestSoft": {
+    "value": "#D6E6D4",
+    "evidence": "v5"
+   },
+   "creamOnForest": {
+    "value": "#F3EFE0",
+    "evidence": "v1 player pill"
+   },
+   "rose": {
+    "value": "#C47864",
+    "evidence": "v4 rose CTA; v1 #C97D6B (icon only)"
+   },
+   "gold": {
+    "value": "#D9B472",
+    "evidence": "v1 coin"
+   },
+   "honey": {
+    "value": "#F4A624",
+    "evidence": "v4"
+   },
+   "teal": {
+    "value": "#A8CDC8",
+    "evidence": "v1 handbag"
+   },
+   "sage": {
+    "value": "#BDB999",
+    "evidence": "v5 cassette"
+   },
+   "twinkle": {
+    "value": "#FEE4D7",
+    "evidence": "v1 f59-82"
+   }
+  },
+  "flower": {
+   "peonyCoral": {
+    "value": "#DD9E92",
+    "evidence": "v4"
+   },
+   "dahliaSalmon": {
+    "value": "#D07E6C",
+    "evidence": "v4"
+   },
+   "roseBrick": {
+    "value": "#B95848",
+    "evidence": "v4"
+   },
+   "roseRed": {
+    "value": "#C4514C",
+    "evidence": "v4 hero rose"
+   },
+   "peach": {
+    "value": "#EDCFB4",
+    "evidence": "v4"
+   },
+   "daisy": {
+    "value": "#F8F1E4",
+    "evidence": "v4"
+   },
+   "hydrangea": {
+    "value": "#9783AB",
+    "evidence": "v4; v1 #A7A7BF"
+   },
+   "sunflower": {
+    "value": "#E8BB5E",
+    "evidence": "v4; v1 #F3CE60"
+   },
+   "sunflowerCentre": {
+    "value": "#8B3D17",
+    "evidence": "v1"
+   },
+   "iris": {
+    "value": "#5B3475",
+    "evidence": "v4"
+   },
+   "peonyHot": {
+    "value": "#C96D87",
+    "evidence": "v5"
+   },
+   "crimson": {
+    "value": "#801F25",
+    "evidence": "v5"
+   },
+   "wallMean": {
+    "value": "#DEA8A4",
+    "evidence": "v5"
+   }
+  },
+  "overlay": {
+   "scrimModal": {
+    "value": "rgba(70,25,55,0.50)",
+    "evidence": "v1 f244-252"
+   },
+   "scrimLightbox": {
+    "value": "rgba(47,15,41,0.68)",
+    "evidence": "v4 f522-529 (.67-.69; audit 1.5 adopts .68)"
+   },
+   "scrimTheater": {
+    "value": "rgba(10,6,8,0.92)",
+    "evidence": "v5 rec."
+   },
+   "flashCamera": {
+    "value": "rgba(255,255,255,0.85)",
+    "evidence": "v1 f54-82"
+   },
+   "flashImpact": {
+    "value": "rgba(246,240,232,0.60)",
+    "evidence": "v4 f580-583"
+   },
+   "tooltip": {
+    "value": "rgba(52,36,30,0.42)",
+    "evidence": "v4"
+   },
+   "vignetteSky": {
+    "value": "linear-gradient(to bottom, rgba(150,110,150,.25) 0%, transparent 28%, transparent 70%, rgba(150,140,140,.18) 100%)",
+    "evidence": "v2a"
+   }
+  }
+ },
+ "themes": {
+  "booth-stripes": {
+   "label": "Sọc Hồng",
+   "source": "v1 f1-644",
+   "products": [
+    "A",
+    "B-default"
+   ],
+   "bg": "#F9F8E8",
+   "bgAlt": "#F2C6C5",
+   "floor": "#C293BD",
+   "floorAlt": "#D79BBD",
+   "surface": "#FDF8F4",
+   "object": "#D996A0",
+   "objectSoft": "#F6C5CC",
+   "curtain": "#F8DBE3",
+   "interior": "#39282B",
+   "ink": "#3D272A",
+   "inkMuted": "#6F5F61",
+   "display": "#843E55",
+   "accent": "#275330",
+   "accentGold": "#D9B472",
+   "accentCool": "#A8CDC8",
+   "stampFill": "#FDF3F5",
+   "stampRing": "#DDB7C3",
+   "stampInk": "#9B4B68",
+   "stripFrame": "#5A3532",
+   "stripFrameShadow": "#3E2726",
+   "stripMotif": "#F3C5C5",
+   "captionBar": "#FFF9F4",
+   "washi": "#D9A1B8",
+   "hint": "#EDC5D7",
+   "hintInk": "#6B4054",
+   "fab": "#6F2748",
+   "fabGlyph": "#F59AC7",
+   "rose": "#C97D6B",
+   "panelTop": "#3B1932",
+   "panelBottom": "#130214",
+   "panelBezel": "#3E3338",
+   "scrim": "rgba(70,25,55,0.50)",
+   "pattern": "stripes-uneven+checker-floor",
+   "labelKey": "theme.boothStripes"
+  },
+  "sweet-gingham": {
+   "label": "Hộp Ngọt",
+   "source": "v4 f90-520; v2b f877-1235",
+   "products": [
+    "A",
+    "B"
+   ],
+   "bg": "#FCECDD",
+   "bgAlt": "#F5B8B3",
+   "patternSingle": "#F7C9C0",
+   "patternCrossing": "#F6BDB7",
+   "highlight": "#FDF6E7",
+   "surface": "#FEF9F5",
+   "object": "#FACDD5",
+   "objectInner": "#FAD8DA",
+   "shadowMauve": "#C19A9A",
+   "ink": "#3A2A2E",
+   "inkMuted": "#7C5A63",
+   "display": "#6E2340",
+   "signature": "#9B3A5A",
+   "washi": "#D9A1B8",
+   "accent": "#CA5E60",
+   "accentWarm": "#E4AD67",
+   "accentHoney": "#F4A624",
+   "noteBubble": "#FFF0F2",
+   "hint": "#FAD3E2",
+   "hintInk": "#5B3B4A",
+   "fab": "#6F2F44",
+   "fabGlyph": "#F49EC5",
+   "rose": "#C47864",
+   "panelTop": "#49223D",
+   "panelMid": "#31132B",
+   "panelBottom": "#120415",
+   "panelBezel": "#3D303A",
+   "scrim": "rgba(47,15,41,0.68)",
+   "picnicVariant": {
+    "bg": "#F8EAE9",
+    "stripe": "#E191B8",
+    "crossing": "#C7609A",
+    "lyric": "#9D4091"
+   },
+   "pattern": "gingham",
+   "labelKey": "theme.sweetGingham"
+  },
+  "garden-envelope": {
+   "label": "Phong Thư Vườn",
+   "source": "v5 f1-817",
+   "products": [
+    "A-default"
+   ],
+   "bg": "#F0E7D6",
+   "bgAlt": "#EAD2BC",
+   "surface": "#FEF7E5",
+   "object": "#DAC6AA",
+   "objectStain": "#BCA486",
+   "seal": "#AB8D9C",
+   "sealCore": "#9C7E92",
+   "display": "#8F6266",
+   "titleInk": "#2E2A1A",
+   "ink": "#484625",
+   "inkMuted": "#626952",
+   "inkSecondary": "#939382",
+   "accent": "#234A30",
+   "accentSoft": "#D6E6D4",
+   "sage": "#BDB999",
+   "sticky": "#F8EBC1",
+   "ringArc": "#C5B09E",
+   "idleBtn": "#FDF7E5",
+   "idleBtnRing": "#E2D6BD",
+   "peonyHot": "#C96D87",
+   "peonyMid": "#D18289",
+   "crimson": "#801F25",
+   "promptOverArt": "#FDF4E5",
+   "hint": "#F6CBDC",
+   "hintInk": "#593040",
+   "fab": "#4F1B2B",
+   "fabGlyph": "#F487BA",
+   "panelTop": "#3F1D35",
+   "panelBottom": "#110012",
+   "panelBezel": "#322123",
+   "embedBezel": "#6C5E5E",
+   "scrim": "rgba(70,25,55,0.50)",
+   "pattern": "paper-laid",
+   "labelKey": "theme.gardenEnvelope"
+  },
+  "cloud-lyric": {
+   "label": "Mây Lời Ca",
+   "source": "v2a f1-800; v2b f795-870",
+   "products": [
+    "A-music-chapter",
+    "B-frame-skin"
+   ],
+   "bg": "#FDFAF3",
+   "bgAlt": "#F6E6ED",
+   "skyTop": "#C6ACC7",
+   "cloud": "#E6C8E2",
+   "cloudLight": "#D1BACD",
+   "horizon": "#E4E2DD",
+   "fog": "#D7CBCB",
+   "loadingSky": "#CEDEE6",
+   "surface": "#FDF8F0",
+   "ink": "#4A3439",
+   "display": "#EBA7E6",
+   "displayGloss": "#F6D9EF",
+   "displayHalo": "#FED8EF",
+   "displayCondensed": "#CF6CC3",
+   "lyric": "#9D4091",
+   "deepest": "#7F436B",
+   "petal": "#E082A8",
+   "petalHighlight": "#F2A1C1",
+   "petalEdge": "#C86189",
+   "extrudeFace": "#F5E3ED",
+   "extrudeSide": "#ECC5DD",
+   "neon": "#E37EB5",
+   "neonSpark": "#FFB5CC",
+   "polkaCard": "#E48DB9",
+   "polkaDot": "#EBBBC9",
+   "notepad": "#F8F0EE",
+   "notepadGrid": "#E8DBDC",
+   "binding": "#F6BFED",
+   "bindingFront": "#D974CE",
+   "photoDuotoneDark": "#966A87",
+   "photoDuotoneLight": "#E0B3C9",
+   "hint": "#F6E6ED",
+   "hintInk": "#5B3B4A",
+   "fab": "#6F2748",
+   "fabGlyph": "#F59AC7",
+   "panelTop": "#49223D",
+   "panelBottom": "#120415",
+   "scrim": "rgba(70,25,55,0.50)",
+   "pattern": "polka|grid-paper + vignetteSky",
+   "labelKey": "theme.cloudLyric"
+  },
+  "oli-notebook": {
+   "label": "Vở Ô Li",
+   "labelKey": "theme.oliNotebook",
+   "source": "original concept (Vietnamese vở ô li school notebook, Playwrite VN hand); keeps only v3's interaction grammar (typed pages, tap the object), none of its composition",
+   "products": [
+    "A-birthday",
+    "B-stickers"
+   ],
+   "bg": "#FBF7EE",
+   "grid": "#D8CCE6",
+   "gridBold": "#B7A3D0",
+   "margin": "#E39A9C",
+   "gridPaper": "#F8F2EC",
+   "doodles": [
+    "#E08A8E",
+    "#8FA9C4",
+    "#C9D88A",
+    "#E5B675"
+   ],
+   "surface": "#FDF3F5",
+   "outline": "#6F5F61",
+   "photoRing": "#E3B3B8",
+   "photoRim": "#B88E92",
+   "photoPlaceholder": "#E8ACAB",
+   "ink": "#3B272C",
+   "inkOnPink": "#3B272C",
+   "display": "#3B272C",
+   "pillOutline": "#6F5F61",
+   "pillFill": "#FFFDF8",
+   "accent": "#FDE194",
+   "flame": "#F0A060",
+   "stickerLine": "#3E2726",
+   "stickerKeyline": "#FFFDF8",
+   "hint": "#F6CBDC",
+   "hintInk": "#6F5F61",
+   "panelFallback": "booth-stripes",
+   "pattern": "oli-grid"
+  }
+ },
+ "font": {
+  "approvedVietnamese74of74": [
+   "Playwrite VN",
+   "Dancing Script",
+   "Pacifico",
+   "Itim",
+   "Patrick Hand",
+   "Be Vietnam Pro",
+   "Playfair Display",
+   "Great Vibes",
+   "Charm",
+   "Mali",
+   "Pangolin",
+   "Anton",
+   "Paytone One",
+   "Dela Gothic One",
+   "Cherry Bomb One",
+   "Grandstander",
+   "Borel",
+   "Shantell Sans",
+   "Sedgwick Ave",
+   "Coiny"
+  ],
+  "banned": [
+   "Caveat",
+   "Caveat Brush",
+   "Sacramento",
+   "Parisienne",
+   "Fredoka",
+   "Bebas Neue",
+   "Lilita One",
+   "Gochi Hand",
+   "Special Elite",
+   "Kalam",
+   "Archivo Black",
+   "Courier Prime",
+   "Bodoni Moda",
+   "DM Serif Display",
+   "Young Serif"
+  ],
+  "candidatesNeedGlyphCheck": [
+   "Montserrat",
+   "Lora",
+   "EB Garamond",
+   "Cormorant Garamond",
+   "Nunito",
+   "Quicksand",
+   "Lexend",
+   "Allura",
+   "Sriracha",
+   "Playpen Sans"
+  ],
+  "family": {
+   "scriptDisplay": "\"Dancing Script\", \"Charm\", \"Be Vietnam Pro\", system-ui, sans-serif",
+   "scriptFormal": "\"Great Vibes\", \"Charm\", \"Dancing Script\", cursive",
+   "scriptSignature": "\"Playwrite VN\", \"Dancing Script\", cursive",
+   "handMarker": "\"Pangolin\", \"Itim\", \"Be Vietnam Pro\", system-ui, sans-serif",
+   "handBody": "\"Mali\", \"Patrick Hand\", \"Itim\", \"Be Vietnam Pro\", system-ui, sans-serif",
+   "handPlayful": "\"Mali\", \"Grandstander\", \"Shantell Sans\", system-ui, sans-serif",
+   "uiSans": "\"Be Vietnam Pro\", system-ui, -apple-system, \"Segoe UI\", Roboto, sans-serif",
+   "uiRounded": "\"Grandstander\", \"Coiny\", \"Be Vietnam Pro\", system-ui, sans-serif",
+   "displayExtruded": "\"Paytone One\", \"Dela Gothic One\", \"Be Vietnam Pro\", system-ui, sans-serif",
+   "displayCondensed": "\"Anton\", \"Be Vietnam Pro\", system-ui, sans-serif",
+   "serifLetter": "\"Playfair Display\", Georgia, \"Times New Roman\", serif"
+  },
+  "style": {
+   "displayHero": {
+    "family": "scriptDisplay",
+    "weight": 700,
+    "size": "clamp(40px, 11vw, 72px)",
+    "lineHeight": 1.7,
+    "tracking": "0",
+    "paddingTop": "0.25em"
+   },
+   "displayLyric": {
+    "family": "scriptFormal",
+    "weight": 400,
+    "size": "clamp(44px, 13vw, 96px)",
+    "lineHeight": 1.75,
+    "tracking": "0",
+    "paddingTop": "0.3em"
+   },
+   "display3d": {
+    "family": "displayExtruded",
+    "weight": 400,
+    "size": "clamp(36px, 10vw, 88px)",
+    "lineHeight": 1.3,
+    "tracking": "0.02em",
+    "paddingTop": "0.18em"
+   },
+   "stampNumeral": {
+    "family": "displayExtruded",
+    "weight": 400,
+    "size": "40px",
+    "lineHeight": 1,
+    "tracking": "0",
+    "lines": "glyph"
+   },
+   "h1": {
+    "family": "serifLetter",
+    "weight": 500,
+    "size": "clamp(28px, 7vw, 44px)",
+    "lineHeight": 1.5,
+    "tracking": "-0.005em",
+    "paddingTop": "0.18em"
+   },
+   "h2": {
+    "family": "serifLetter",
+    "weight": 500,
+    "size": "24px",
+    "lineHeight": 1.5,
+    "tracking": "0"
+   },
+   "letterGreeting": {
+    "family": "handBody",
+    "weight": 500,
+    "size": "26px",
+    "lineHeight": 1.6,
+    "tracking": "0"
+   },
+   "letterBody": {
+    "family": "handBody",
+    "weight": 400,
+    "size": "18px",
+    "lineHeight": "30px",
+    "tracking": "0.01em"
+   },
+   "handLabel": {
+    "family": "handMarker",
+    "weight": 400,
+    "size": "17px",
+    "lineHeight": 1.5,
+    "tracking": "0.01em",
+    "lines": "single"
+   },
+   "caption": {
+    "family": "handBody",
+    "weight": 400,
+    "size": "15px",
+    "lineHeight": 1.6,
+    "tracking": "0.02em"
+   },
+   "uiBody": {
+    "family": "uiSans",
+    "weight": 400,
+    "size": "16px",
+    "lineHeight": 1.55,
+    "tracking": "0"
+   },
+   "uiLabel": {
+    "family": "uiSans",
+    "weight": 600,
+    "size": "14px",
+    "lineHeight": 1.4,
+    "tracking": "0.01em",
+    "lines": "single"
+   },
+   "uiEyebrow": {
+    "family": "uiSans",
+    "weight": 600,
+    "size": "13px",
+    "lineHeight": 1.5,
+    "tracking": "0.12em",
+    "textTransform": "uppercase",
+    "maxTracking": "0.15em",
+    "lines": "single"
+   },
+   "uiMicro": {
+    "family": "uiSans",
+    "weight": 500,
+    "size": "13px",
+    "lineHeight": 1.5,
+    "tracking": "0.02em"
+   },
+   "tooltip": {
+    "family": "handBody",
+    "weight": 400,
+    "size": "14px",
+    "lineHeight": 1.6,
+    "tracking": "0"
+   },
+   "statusPill": {
+    "family": "handBody",
+    "weight": 500,
+    "size": "16px",
+    "lineHeight": 1.4,
+    "tracking": "0",
+    "lines": "single"
+   },
+   "counter": {
+    "family": "uiSans",
+    "weight": 500,
+    "size": "14px",
+    "lineHeight": 1.4,
+    "tracking": "0",
+    "lines": "single",
+    "numeric": "tabular-nums"
+   }
+  },
+  "vietnameseRules": {
+   "minLineHeight": {
+    "sans": 1.5,
+    "serif": 1.5,
+    "handBody": 1.6,
+    "script": 1.7,
+    "scriptGreatVibes": 1.75,
+    "allCaps": 1.3,
+    "singleLine": 1.35
+   },
+   "clipPaddingTop": {
+    "script": "0.25em",
+    "capsExtruded": "0.18em"
+   },
+   "maxCapsTracking": "0.15em",
+   "scriptTracking": "0",
+   "noUppercaseScript": true,
+   "segmenter": "Intl.Segmenter('vi',{granularity:'grapheme'}) on NFC",
+   "pillPaddingBlock": ".42em .38em",
+   "maxExtrusion": "0.06em",
+   "qaStrings": [
+    "Gửi người thương nhất — Chúc mừng sinh nhật!",
+    "ĐỢI ANH NHÉ · Ễ Ặ Ỗ Ờ Ự",
+    "Thương em nhiều lắm, đừng quên nụ cười này nhé.",
+    "chạm vào dải ảnh ✦",
+    "đang in…",
+    "cười lên!",
+    "Ừ, Ặng, Nguyễn Thị Ánh Dương, ĐẶNG"
+   ],
+   "familyClass": {
+    "uiSans": "sans",
+    "uiRounded": "sans",
+    "serifLetter": "serif",
+    "handBody": "handBody",
+    "handPlayful": "handBody",
+    "handMarker": "handBody",
+    "scriptDisplay": "script",
+    "scriptSignature": "script",
+    "scriptFormal": "scriptGreatVibes",
+    "displayExtruded": "allCaps",
+    "displayCondensed": "allCaps"
+   },
+   "minSizePx": {
+    "body": 15,
+    "caption": 13,
+    "at": "360 px viewport (FRAMEWORK §3.4 rule 6 = §5.7)"
+   }
+  },
+  "note": "Only approvedVietnamese74of74 faces may render sender-typed text. Candidates (subset flag only) need i18n/tools/font_glyph_check.py on the self-hosted WOFF2 before use. Playwrite VN is full coverage although Google serves it without a /* vietnamese */ subset (flag 0): never gate on the subset flag. Noto Serif / Gelasio removed from stacks: unverified (audit 1.18).",
+  "budget": {
+   "critical": "<=3 faces (family+weight+style) before the first tap",
+   "perGift": "<=6 faces per gift",
+   "userPicked": "fonts the user picks for sticker or text in B load on demand, at most 2 extra, outside the gift budget"
+  },
+  "scenePlan": {
+   "envelope": {
+    "critical": [
+     "uiSans 500",
+     "handBody 400",
+     "scriptDisplay 700"
+    ],
+    "deferred": [
+     "handBody 500",
+     "scriptSignature 400",
+     "uiSans 600"
+    ],
+    "deferUntil": "letter page pre-mount (during the bloom)"
+   },
+   "box": {
+    "critical": [
+     "uiSans 500",
+     "handBody 400",
+     "handBody 500"
+    ],
+    "deferred": [
+     "scriptSignature 400",
+     "uiSans 600"
+    ],
+    "deferUntil": "completion spread"
+   },
+   "giftBooth": {
+    "critical": [
+     "uiSans 500",
+     "handBody 500",
+     "displayExtruded 400"
+    ],
+    "deferred": [
+     "handBody 400",
+     "scriptSignature 400",
+     "uiSans 600"
+    ],
+    "deferUntil": "first strip lands"
+   },
+   "notebook": {
+    "critical": [
+     "uiSans 500",
+     "handBody 400",
+     "scriptSignature 400"
+    ],
+    "deferred": [
+     "handBody 500",
+     "uiSans 600"
+    ],
+    "deferUntil": "page 2"
+   },
+   "productB": {
+    "critical": [
+     "uiSans 500",
+     "handBody 500",
+     "displayExtruded 400"
+    ],
+    "deferred": [
+     "uiSans 600"
+    ],
+    "deferUntil": "review"
+   },
+   "rule": "serifLetter (Playfair) and uiRounded (Grandstander) are not in any default plan; a premium theme may swap one deferred face for one of them"
+  }
+ },
+ "radius": {
+  "photo": {
+   "value": "2px",
+   "evidence": "v2b polaroid <=2px"
+  },
+  "xs": {
+   "value": "6px",
+   "evidence": "v4 tooltip 5-8"
+  },
+  "sm": {
+   "value": "10px",
+   "evidence": "v4 note bubble; v5 inner cards"
+  },
+  "md": {
+   "value": "14px",
+   "evidence": "v1 rail; v5 drawer"
+  },
+  "lg": {
+   "value": "20px",
+   "evidence": "v3 card 16-22"
+  },
+  "pill": {
+   "value": "9999px",
+   "evidence": "v3/v5"
+  },
+  "page": {
+   "value": "0 0 28px 0",
+   "evidence": "v5 paper column"
+  }
+ },
+ "border": {
+  "hairline": "1px solid rgba(59,39,44,.12)",
+  "card": "1.5px solid #5A3536",
+  "pill": "1.5px solid #4A4A4A",
+  "ring": "2.5px solid #DDB7C3",
+  "bezel": "6px solid #3D303A",
+  "idleButton": "1.5px solid #E2D6BD"
+ },
+ "shadow": {
+  "xs": {
+   "value": "0 1px 3px rgba(120,70,80,.20)",
+   "evidence": "v4 tags"
+  },
+  "sm": {
+   "value": "0 2px 6px rgba(80,40,50,.20)",
+   "evidence": "v1 UI"
+  },
+  "photo": {
+   "value": "0 2px 6px rgba(80,40,40,.25)",
+   "evidence": "v4 polaroids"
+  },
+  "letter": {
+   "value": "0 3px 10px rgba(120,60,70,.18)",
+   "evidence": "v4 letter"
+  },
+  "object": {
+   "value": "drop-shadow(0 8px 12px rgba(150,80,90,.35))",
+   "evidence": "v4 box (filter)"
+  },
+  "lift": {
+   "value": "0 8px 24px rgba(30,0,20,.35)",
+   "evidence": "v4 lightbox"
+  },
+  "dock": {
+   "value": "-6px 0 20px rgba(60,20,40,.25)",
+   "evidence": "v4 drawer"
+  },
+  "popover": {
+   "value": "0 16px 44px rgba(20,8,12,.55)",
+   "evidence": "v5 drawer"
+  },
+  "pillEdge": {
+   "value": "0 2px 0 #E8B9C6, 0 3px 8px rgba(120,60,80,.15)",
+   "evidence": "v4 pills"
+  },
+  "sticker": {
+   "value": "0 2px 4px rgba(31,27,26,.22)",
+   "evidence": "v3 stickers"
+  },
+  "glowScript": {
+   "value": "0 0 10px rgba(254,216,239,.9), 0 0 2px rgba(246,217,239,.8)",
+   "evidence": "v2a halo"
+  },
+  "textOverArt": {
+   "value": "0 1px 2px rgba(60,20,30,.55), 0 0 12px rgba(60,20,30,.35)",
+   "evidence": "v5 prompt over flowers"
+  },
+  "extrudeMarshmallow": {
+   "value": "0 1px 0 #ECC5DD, 0 2px 0 #ECC5DD, 0 3px 0 #E8B8D9, 0 4px 6px rgba(160,90,140,.25)",
+   "evidence": "v2a YOU."
+  }
+ },
+ "proportion": {
+  "polaroid": {
+   "aspect": 0.835,
+   "window": "square",
+   "borderSidePctW": 5,
+   "borderTopPctW": 5,
+   "borderBottomPctH": 21,
+   "tiltDeg": [
+    -6,
+    -3.5,
+    -1.5,
+    2,
+    4,
+    6
+   ],
+   "evidence": "v2b UI; v4 tilt"
+  },
+  "polaroidLarge": {
+   "borderSides": "15px",
+   "borderBottom": "45px",
+   "evidence": "v4 lightbox"
+  },
+  "photoStrip": {
+   "exportPx": [
+    600,
+    1800
+   ],
+   "aspect": "1:3 (export and on screen)",
+   "screenAspect": "1:3 (the renderer always uses the export ratio; v1's 119x381 = 1:3.2 is the reference observation only)",
+   "frames": 4,
+   "frameAspect": "4:3",
+   "framePx": [
+    486,
+    364
+   ],
+   "insetTopPx": 36,
+   "insetSidePx": 57,
+   "gapPx": 18,
+   "footerPx": 254,
+   "heightCheck": "36 + 4*364 + 3*18 + 254 = 1800",
+   "fanDeg": [
+    -3.6,
+    1.3,
+    4
+   ],
+   "evidence": "v1 #23/#27/#31 f101-198 (fan), §5.4 layout table (600x1800)"
+  },
+  "letterCard": {
+   "aspect": 0.77,
+   "tiltDeg": -1.5,
+   "maxWidth": "min(88vw,360px)",
+   "landscapeAspect": "5:3",
+   "evidence": "v1 f244-252; v3"
+  },
+  "washi": {
+   "widthPctCard": [
+    22,
+    30
+   ],
+   "heightPx": [
+    14,
+    18
+   ],
+   "rotateDeg": [
+    -8,
+    8
+   ],
+   "opacity": 0.73,
+   "blend": "multiply",
+   "evidence": "v1, v4"
+  },
+  "sticker": {
+   "keylinePctW": 6,
+   "evidence": "v3"
+  },
+  "circlePhoto": {
+   "ringPx": 4,
+   "rimPx": 1,
+   "diameterPctCardH": [
+    44,
+    56
+   ],
+   "evidence": "v3"
+  },
+  "cassette": {
+   "aspect": 1.574,
+   "windowPct": [
+    56,
+    30
+   ],
+   "reelDiameterPctW": 18,
+   "reelOffsetPctW": 19,
+   "reelPeriodMs": 1100,
+   "evidence": "v5 f364-817"
+  },
+  "countdownStamp": {
+   "diameterPx": 72,
+   "clamp": [
+    64,
+    96
+   ],
+   "ringPx": 2.5,
+   "evidence": "v1 f30-53",
+   "rotateDeg": {
+    "value": 0,
+    "note": "v1 #7-11 measures scale only; any alternating tilt is an original design option, default off"
+   }
+  },
+  "hintRing": {
+   "diameterPx": 30,
+   "strokePx": 1.5,
+   "scaleTo": 1.8,
+   "periodMs": 800,
+   "evidence": "v4 A7 (r16 -> 29.4 = x1.84); v1 #3 (x1.8); audit 1.3"
+  },
+  "gingham": {
+   "tile": "clamp(28px, 8.9vw, 56px)",
+   "periodPctW": 8.9,
+   "stripeAlpha": 0.68,
+   "evidence": "v4 45.5px tile @1024w"
+  },
+  "stripeWall": {
+   "widthPctW": [
+    4.7,
+    7.8
+   ],
+   "evidence": "v1 48-80px @1024w"
+  },
+  "fab": {
+   "mobilePx": 48,
+   "desktopPx": 36,
+   "evidence": "v4 28-30, v5 35-36"
+  },
+  "dock": {
+   "desktopWidthPct": 22,
+   "popoverPx": [
+    282,
+    393
+   ],
+   "bezelPx": 6,
+   "evidence": "v1, v4, v5"
+  },
+  "oliGrid": {
+   "cell": "clamp(20px, 6vw, 32px)",
+   "subLines": 3,
+   "marginPctW": 12,
+   "lineWeightPx": 1,
+   "evidence": "original concept: the Vietnamese vở ô li school notebook (not a reference video)"
+  }
+ }
+}
