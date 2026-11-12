@@ -1,0 +1,22 @@
+.landing { display: flex; flex-direction: column; align-items: center; padding: max(28px, env(safe-area-inset-top)) 16px max(24px, env(safe-area-inset-bottom)); gap: 22px; }
+.landing-head { text-align: center; max-width: 34rem; }
+.landing-title { margin: 8px 0 4px; font-family: var(--type-display-hero-family); font-weight: var(--type-display-hero-weight);
+  font-size: clamp(34px, 9.5vw, 60px); line-height: var(--type-display-hero-line-height); padding-top: var(--type-display-hero-padding-top);
+  color: var(--t-display); font-synthesis: none; text-wrap: balance; }
+.landing-sub { margin: 0; color: var(--t-ink-muted); font-family: var(--font-hand-body); font-size: 17px; line-height: 1.65; text-wrap: pretty; }
+.landing-choices { display: grid; grid-template-columns: 1fr; gap: 14px; width: 100%; max-width: 560px; }
+@media (min-width: 640px) { .landing-choices { grid-template-columns: 1fr 1fr; } }
+.landing-card { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 18px 16px 20px; border-radius: var(--radius-lg);
+  background: var(--t-surface); color: var(--t-ink); text-decoration: none; box-shadow: var(--shadow-sm); border: var(--border-hairline); min-height: 44px; }
+.landing-card:active { scale: .99 .995; }
+.landing-art { width: 132px; height: 99px; }
+.landing-card-title { font-family: var(--font-ui-sans); font-weight: 600; font-size: 20px; line-height: 1.5; }
+.landing-card-hint { font-family: var(--font-hand-body); font-size: 15px; line-height: 1.6; color: var(--t-ink-muted); text-align: center; }
+.landing-links { margin: 0; font-family: var(--font-ui-sans); font-size: 14px; line-height: 1.5; }
+.landing-links a { color: var(--t-accent); text-underline-offset: .2em; }
+.landing-foot { margin-top: auto; }
+/* procedural art: theme / core colour variables only */
+.la-env { fill: var(--t-object); } .la-env-flap { fill: var(--c-kraft-500); } .la-seal { fill: var(--t-seal, var(--c-berry-600)); }
+.la-flower ellipse { fill: var(--c-flower-peony-coral); } .la-flower-core { fill: var(--c-flower-sunflower); }
+.la-booth { fill: var(--c-blush-600); } .la-booth-window { fill: var(--c-plum-panel-top); } .la-lens { fill: var(--c-blush-200); }
+.la-slot { fill: var(--c-plum-panel-mid); } .la-strip { fill: var(--c-kraft-500); } .la-strip-cell { fill: var(--c-cream-300); }

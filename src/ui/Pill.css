@@ -1,0 +1,13 @@
+.ui-pill {
+  display: inline-flex; align-items: center; gap: .25em;
+  padding: .42em .9em .38em; border-radius: var(--radius-pill); border: 0;
+  font-family: var(--type-status-pill-family); font-weight: var(--type-status-pill-weight);
+  font-size: var(--type-status-pill-size); line-height: var(--type-status-pill-line-height);
+  white-space: nowrap; color: var(--t-ink); background: var(--c-cream-100); box-shadow: var(--shadow-sm);
+}
+.ui-pill--hint { background: var(--t-hint); color: var(--t-hint-ink); box-shadow: var(--shadow-pill-edge); }
+.ui-pill--link { background: transparent; box-shadow: none; text-decoration: underline; text-underline-offset: .2em; }
+.ui-pill--action { background: var(--c-accent-forest); color: var(--c-accent-cream-on-forest);
+  font-family: var(--type-ui-label-family); font-weight: var(--type-ui-label-weight); font-size: var(--type-ui-label-size); }
+button.ui-pill { cursor: pointer; min-height: 44px; }
+button.ui-pill:disabled { opacity: .5; cursor: default; }

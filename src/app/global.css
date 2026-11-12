@@ -1,0 +1,18 @@
+/* App base (owner: scaffold). Colours come from tokens.css variables only. */
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+html, body { margin: 0; min-height: 100%; }
+body {
+  background: var(--t-bg); color: var(--t-ink);
+  font-family: var(--type-ui-body-family); font-size: var(--type-ui-body-size); line-height: var(--type-ui-body-line-height);
+  -webkit-tap-highlight-color: transparent; overscroll-behavior-y: none;
+}
+#root { min-height: 100dvh; }
+button { font: inherit; color: inherit; }
+img { max-width: 100%; }
+.app-scene { min-height: 100dvh; background: var(--t-bg); color: var(--t-ink); position: relative; isolation: isolate; }
+.fx-canvas { position: fixed; inset: 0; z-index: var(--z-stage-fx); pointer-events: none; }
+.visually-hidden { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+:focus-visible { outline: 2px solid var(--c-berry-500); outline-offset: 2px; }
+/* Hidden by the Director's remove/unmount steps */
+[data-director-hidden] { display: none !important; }

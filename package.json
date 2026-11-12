@@ -1,0 +1,39 @@
+{
+  "name": "qua-tang-starter",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Starter kit: Vietnamese digital gift card + self-photobooth (FRAMEWORK.md §7).",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview --port 4173 --strictPort",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "vitest run",
+    "e2e": "node e2e/run.mjs",
+    "tokens": "python3 -I design-tokens/build.py",
+    "strings": "python3 -I i18n/tools/build_vi.py"
+  },
+  "dependencies": {
+    "@fontsource/be-vietnam-pro": "5.3.0",
+    "@fontsource/dancing-script": "5.3.0",
+    "@fontsource/mali": "5.3.0",
+    "@fontsource/paytone-one": "5.3.0",
+    "@fontsource/playwrite-vn": "5.3.0",
+    "motion": "14.13.0",
+    "react": "19.3.1",
+    "react-dom": "19.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "22.20.5",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@vitejs/plugin-react": "6.3.0",
+    "typescript": "7.0.2",
+    "vite": "8.3.8",
+    "vitest": "5.1.0"
+  }
+}

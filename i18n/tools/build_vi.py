@@ -450,6 +450,33 @@ s('og.anonymousTitle','Ai đó gửi bạn một món quà','Someone sent you a 
 s('og.description','Chạm để mở','Tap to open')
 s('og.lockedDescription','Mở vào {date}','Opens on {date}')
 
+# ---------- starter kit: app shell, landing, lab (owner: scaffold; app voice) ----------
+s('app.title','Quà tặng','Gifts')
+s('app.home','Về trang đầu','Home')
+s('app.notFound','Không tìm thấy trang này.','Page not found.')
+s('landing.title','Một món quà nhỏ cho người thương','A little gift for someone you love')
+s('landing.subtitle','Gói một lá thư, vài tấm ảnh và thật nhiều hoa, rồi gửi bằng một đường liên kết.','Wrap a letter, a few photos and plenty of flowers, then send it as a link.')
+s('landing.gift','Tặng quà','Send a gift')
+s('landing.giftHint','Tạo thiệp và gửi liên kết cho người ấy','Make a card and send the link')
+s('landing.booth','Photobooth','Photobooth')
+s('landing.boothHint','Tự chụp dải ảnh ngay trên máy của bạn','Shoot a photo strip on your own device')
+s('landing.sample','Mở thử một món quà mẫu','Open a sample gift')
+s('lab.title','Phòng thử chuyển động','Motion lab')
+s('lab.intro','Mỗi mục là một chuyển động gốc. Chạm “Chạy lại” để xem lần nữa.','Each entry is one primitive. Tap “Replay” to run it again.')
+s('lab.replay','Chạy lại','Replay')
+s('lab.empty','Chưa có mục nào trong phòng thử.','No lab entries yet.')
+s('lab.all','Tất cả','All')
+s('lab.stub','Chưa làm','Not built yet')
+s('lab.speed','Tốc độ ×{speed}','Speed ×{speed}')
+
+# ---------- starter kit: primitives builder adds keys here (owner: primitives) ----------
+
+# ---------- starter kit: fx builder adds keys here (owner: fx) ----------
+
+# ---------- starter kit: booth builder adds keys here (owner: booth) ----------
+
+# ---------- starter kit: gift builder adds keys here (owner: gift) ----------
+
 # ---------- formats ----------
 s('format.date','{d}/{m}/{y}','{m}/{d}/{y}')
 s('format.lunarDate','{d}/{m} âm lịch','{d}/{m} (lunar)')

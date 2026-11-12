@@ -1,0 +1,6 @@
+.ui-stamp { --size: clamp(64px, 18vw, 96px); width: var(--size); height: var(--size); border-radius: 50%;
+  display: grid; place-items: center; background: var(--t-stamp-fill, var(--c-blush-50));
+  border: 2.5px solid var(--t-stamp-ring, var(--c-blush-ring)); box-shadow: inset 0 0 0 5px var(--t-stamp-fill, var(--c-blush-50)), inset 0 0 0 6px var(--c-blush-ring); }
+.ui-stamp--lg { --size: 120px; }
+.ui-stamp__digit { font-family: var(--type-stamp-numeral-family); font-size: calc(var(--size) * .55); line-height: 1; padding-top: var(--vi-clip-pad-caps-extruded); color: var(--t-stamp-ink, var(--c-berry-500)); font-synthesis: none; }
+.ui-stamp__smile { font-family: var(--font-hand-body); font-weight: 500; font-size: 15px; line-height: 1.4; color: var(--t-stamp-ink, var(--c-berry-500)); text-align: center; padding-inline: 6px; }
