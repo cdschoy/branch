@@ -1,0 +1,9 @@
+/* ContinueObject (owner: primitives). 40 px art in a 44 px hit area; guard tooltip under it (§3.6 GuardTooltip). */
+.ui-continue { position: relative; display: inline-grid; justify-items: center; }
+.ui-continue__btn { position: relative; width: 44px; height: 44px; padding: 2px; border: 0; background: none; cursor: pointer; display: grid; place-items: center; touch-action: manipulation; }
+.ui-continue__btn > svg { width: 40px; height: 40px; filter: drop-shadow(0 2px 2px var(--t-shadow-mauve, var(--c-ink-400))); }
+.ui-continue__tip {
+  position: absolute; top: calc(100% + 6px); right: 0; width: max-content; max-width: min(70vw, 260px);
+  padding: .45em .8em .4em; border-radius: var(--radius-md); background: var(--c-overlay-tooltip); color: var(--c-cream-50);
+  font-family: var(--font-hand-body); font-weight: 400; font-size: 14px; line-height: 1.45; text-align: center;
+}

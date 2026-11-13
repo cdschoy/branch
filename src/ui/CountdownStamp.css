@@ -1,6 +1,9 @@
-.ui-stamp { --size: clamp(64px, 18vw, 96px); width: var(--size); height: var(--size); border-radius: 50%;
+/* CountdownStamp (owner: primitives). Fill #FDF3F5, 2.5 px ring #DDB7C3 + inner dashed ring, numeral #9B4B68. */
+.ui-stamp-slot { --size: clamp(64px, 18vw, 96px); position: relative; width: var(--size); height: var(--size); display: grid; }
+.ui-stamp-slot--lg { --size: 120px; }
+.ui-stamp { grid-area: 1 / 1; width: var(--size); height: var(--size); border-radius: 50%; position: relative;
   display: grid; place-items: center; background: var(--t-stamp-fill, var(--c-blush-50));
-  border: 2.5px solid var(--t-stamp-ring, var(--c-blush-ring)); box-shadow: inset 0 0 0 5px var(--t-stamp-fill, var(--c-blush-50)), inset 0 0 0 6px var(--c-blush-ring); }
-.ui-stamp--lg { --size: 120px; }
-.ui-stamp__digit { font-family: var(--type-stamp-numeral-family); font-size: calc(var(--size) * .55); line-height: 1; padding-top: var(--vi-clip-pad-caps-extruded); color: var(--t-stamp-ink, var(--c-berry-500)); font-synthesis: none; }
-.ui-stamp__smile { font-family: var(--font-hand-body); font-weight: 500; font-size: 15px; line-height: 1.4; color: var(--t-stamp-ink, var(--c-berry-500)); text-align: center; padding-inline: 6px; }
+  border: 2.5px solid var(--t-stamp-ring, var(--c-blush-ring)); box-shadow: var(--shadow-sticker, var(--shadow-sm)); }
+.ui-stamp::after { content: ''; position: absolute; inset: 5px; border-radius: 50%; border: 1px dashed var(--t-stamp-ring, var(--c-blush-ring)); pointer-events: none; }
+.ui-stamp__digit { font-family: var(--type-stamp-numeral-family); font-size: calc(var(--size) * .55); line-height: 1; padding-top: var(--vi-clip-pad-caps-extruded); color: var(--t-stamp-ink, var(--c-berry-500)); font-synthesis: none; font-variant-numeric: tabular-nums; }
+.ui-stamp__smile { font-family: var(--font-hand-body); font-weight: 500; font-size: calc(var(--size) * .2); line-height: 1.4; color: var(--t-stamp-ink, var(--c-berry-500)); text-align: center; padding-inline: 6px; }

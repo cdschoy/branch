@@ -9,6 +9,7 @@ import { ticker as sharedTicker, type Ticker } from '../motion/core/ticker';
 import { budgets, type Tier } from '../motion/core/tokens';
 import { getTier } from '../motion/core/tier';
 import { isReducedMotion } from '../motion/core/reduced';
+import { director } from '../motion/core/director';
 import { hashSeed, mulberry32 } from './rng';
 import { getEmitter } from './registry';
 import { getShape } from './shapes';
@@ -17,9 +18,18 @@ import type { EmitOptions, EmitterId, EmitterInstance, FxEngine, FxHandle, Sprit
 interface Active {
   id: EmitterId; inst: EmitterInstance; time: number; speed: number; paused: boolean; autoplay: boolean;
   done: () => void; stopped: boolean;
+  /** G18 circuit breaker state (autoplay spectacles only; Director-driven handles use the Director's). */
+  breaker: boolean; frames: number; drops: [number, number][];
 }
 
 const BUCKET = 8; // px size buckets for the bitmap cache
+/** Emitters that are spectacles (G18 breaker, degradeNext → reduced crossfade). Particles are not. */
+export const SPECTACLE_EMITTERS: ReadonlySet<string> = new Set(['curtainReveal', 'curtainWipe', 'curtainDrop', 'bloom', 'flood']);
+const FRAME = 1000 / 60;
+/** Frames ignored after an emit (bitmap warm-up, the React commit that started it). */
+const BREAKER_GRACE_FRAMES = 3;
+/** Sample times (fractions of the duration) used to pre-render a new emission's bitmaps. */
+const WARM_AT = [0, 0.25, 0.5, 0.75, 1] as const;
 
 export function createFxEngine(deps: { ticker?: Ticker } = {}): FxEngine {
   const tk = deps.ticker ?? sharedTicker;
@@ -70,6 +80,34 @@ export function createFxEngine(deps: { ticker?: Ticker } = {}): FxEngine {
     bitmapCache.clear();
   };
 
+  /** Pre-render every bitmap an emission will use (the atlas), so frame 1 only blits. */
+  const prewarm = (inst: EmitterInstance) => {
+    if (!g || typeof document === 'undefined') return;
+    const d = Number.isFinite(inst.durationMs) ? inst.durationMs : 4000;
+    const seen = new Set<string>();
+    for (const f of WARM_AT) for (let i = 0; i < inst.count; i++) {
+      if (!inst.sprite(i, f * d, scratch)) continue;
+      const key = `${scratch.shape}|${scratch.color}|${scratch.size}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      bitmap(scratch.shape, scratch.color, scratch.size);
+    }
+  };
+
+  /** G18: ≥3 dropped frames within 50 ms → skip to the end state and degrade the next spectacle. */
+  const tripped = (a: Active, dt: number): boolean => {
+    if (!a.breaker || ++a.frames <= BREAKER_GRACE_FRAMES) return false;
+    const t = tk.now();
+    const dropped = Math.max(0, Math.round(dt / FRAME) - 1);
+    if (dropped) a.drops.push([t, dropped]);
+    while (a.drops.length && t - a.drops[0]![0] > 50 + dt) a.drops.shift();
+    if (a.drops.reduce((n, d) => n + d[1], 0) < 3) return false;
+    console.warn(`[fx] ${a.id}: frame-drop breaker tripped → skip, next spectacle degrades`);
+    director.degradeNext = true;
+    a.time = a.inst.durationMs;
+    return true;
+  };
+
   const draw = (_now: number, dt: number) => {
     if (!g || !canvas) {
       // no canvas attached: still advance autoplay handles so their promises resolve
@@ -81,6 +119,7 @@ export function createFxEngine(deps: { ticker?: Ticker } = {}): FxEngine {
     g.clearRect(0, 0, canvas.width, canvas.height);
     for (const a of active) {
       if (a.autoplay && !a.paused) a.time += dt * a.speed;
+      if (a.autoplay && !a.paused && tripped(a, dt)) { finish(a); continue; }
       const { inst } = a;
       const t = a.time;
       g.save();
@@ -139,11 +178,21 @@ export function createFxEngine(deps: { ticker?: Ticker } = {}): FxEngine {
         return { id, durationMs: 0, time: 0, finished, seek() {}, pause() {}, resume() {}, setSpeed() {}, stop() {} };
       }
       if (!view.w) { view = { w: window.innerWidth, h: window.innerHeight, dpr: 1 }; }
+      const spectacle = SPECTACLE_EMITTERS.has(id);
+      const autoplay = opts.autoplay ?? true;
+      // a direct (autoplay) spectacle after a tripped breaker plays as the reduced crossfade (G18)
+      const degrade = autoplay && spectacle && !reduced && director.degradeNext;
+      if (degrade) director.degradeNext = false;
       const inst = def.create({
-        seed, rng: mulberry32(seed), params, view, origin: originOf(opts.origin), tier, reduced,
-        count: opts.count ?? def.count(tier, params), durMs: opts.durMs,
+        seed, rng: mulberry32(seed), params, view, origin: originOf(opts.origin), tier, reduced: reduced || degrade,
+        count: opts.count ?? def.count(tier, params), durMs: degrade ? undefined : opts.durMs,
       });
-      const a: Active = { id, inst, time: 0, speed: opts.speed ?? 1, paused: false, autoplay: opts.autoplay ?? true, done, stopped: false };
+      prewarm(inst);
+      const breaker = autoplay && spectacle && params.circuitBreaker !== false;
+      const a: Active = {
+        id, inst, time: 0, speed: opts.speed ?? 1, paused: false, autoplay, done, stopped: false,
+        breaker, frames: 0, drops: [],
+      };
       active.add(a); wake();
       return {
         id, durationMs: inst.durationMs, finished,

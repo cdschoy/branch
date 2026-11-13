@@ -1,0 +1,6 @@
+/* DrawerPull (owner: primitives). 48 px plum #6F2748, unseen dot #F4A624; 16 px inset + safe area is the caller's placement. */
+.ui-pull { display: inline-flex; align-items: center; gap: 10px; }
+.ui-pull__btn { position: relative; width: 48px; height: 48px; border-radius: 50%; border: 0; padding: 0; cursor: pointer;
+  background: var(--t-fab, var(--c-plum-fab)); box-shadow: var(--shadow-object, var(--shadow-sm)); display: grid; place-items: center; touch-action: manipulation; }
+.ui-pull__btn > svg { width: 30px; height: 30px; }
+.ui-pull__dot { position: absolute; right: 3px; top: 3px; width: 10px; height: 10px; border-radius: 50%; background: var(--c-accent-honey); box-shadow: 0 0 0 2px var(--t-fab, var(--c-plum-fab)); }

@@ -470,8 +470,35 @@ s('lab.stub','Chưa làm','Not built yet')
 s('lab.speed','Tốc độ ×{speed}','Speed ×{speed}')
 
 # ---------- starter kit: primitives builder adds keys here (owner: primitives) ----------
+s('lab.prim.typeShort','Hôm nay trời trong, mình đi dạo một vòng nhé.','The sky is clear today, let us take a little walk.')
+s('lab.prim.typeLong','Có những ngày rất bình thường: một ly cà phê sữa đá, một cơn mưa bóng mây, một tin nhắn hỏi đã ăn cơm chưa. Vậy mà nhớ lại, chính những ngày ấy làm mình thấy ấm lòng nhất. Cảm ơn vì đã ở cạnh nhau qua từng ngày như thế.','Some days are very ordinary: an iced milk coffee, a sun shower, a message asking whether you have eaten. Looking back, those are the days that warm me most. Thank you for being there through each of them.')
+s('lab.prim.lyric','Chiều nay nắng vàng như mật ong','This afternoon the sun is honey-gold')
+s('lab.prim.lyricDreamy','Mình cứ đi chậm thôi, hoa nở dọc đường','Let us walk slowly, flowers bloom along the way')
+s('lab.prim.pageOne','Trang một: hồi mình mới quen','Page one: when we first met')
+s('lab.prim.pageTwo','Trang hai: chuyến đi biển đầu tiên','Page two: our first trip to the sea')
+s('lab.prim.next','Đổi trang','Next page')
+s('lab.prim.toggle','Mở / đóng','Open / close')
+s('lab.prim.fire','Chụp','Shoot')
+s('lab.prim.impulse','Chạm nhẹ','Nudge')
+s('lab.prim.play','Phát','Play')
+s('lab.prim.pause','Dừng','Pause')
+s('lab.prim.buffer','Đang chờ','Waiting')
+s('lab.prim.ready','Đã đọc xong','Read it all')
+s('lab.prim.bite','Bánh bò','Honeycomb cake')
+s('lab.prim.tooltip','Chạm vào nơ để mở','Tap the ribbon to open')
+s('lab.prim.stateA','Phong bì','Envelope')
+s('lab.prim.stateB','Thư mở','Letter open')
 
 # ---------- starter kit: fx builder adds keys here (owner: fx) ----------
+s('fx.lab.play','Chạy','Play')
+s('fx.lab.pause','Dừng','Pause')
+s('fx.lab.scrub','Tua hiệu ứng','Scrub the effect')
+s('fx.lab.time','{ms} / {total} ms','{ms} / {total} ms')
+s('fx.lab.cover','Che phủ {pct}%','Cover {pct}%')
+s('fx.lab.covered','Đã che kín, đổi cảnh','Covered, swap now')
+s('fx.lab.sprites','{n} hình','{n} sprites')
+s('fx.lab.tier','Cấu hình máy: {tier}','Device tier: {tier}')
+s('fx.lab.reducedNote','Giảm chuyển động: chỉ mờ dần','Reduced motion: short fade only')
 
 # ---------- starter kit: booth builder adds keys here (owner: booth) ----------
 

@@ -1,0 +1,60 @@
+/* Primitive styles (owner: primitives). Colours: tokens.css variables only; timings: --d-* / --e-*. */
+
+/* P42 typewriter: glyphs are laid out from the start (no reflow), words never break inside. */
+.prim-tw__word { white-space: nowrap; }
+.prim-tw__g { opacity: 0; transition: opacity var(--tw-fade, 0ms) linear; }
+.prim-tw__g.on, .prim-tw.is-done .prim-tw__g { opacity: 1; }
+
+/* P17 hoverGrow: hover-capable pointers only; never the only affordance. */
+.prim-hovergrow { display: inline-block; transition: scale var(--d-quick) var(--e-out-quad); }
+@media (hover: hover) {
+  .prim-hovergrow--button:hover { scale: 1.06; }
+  .prim-hovergrow--pull:hover { scale: 1.04; }
+}
+
+/* P28 hint rings: pointer-events none, centred on the parent. */
+.prim-hint { position: relative; display: inline-grid; place-items: center; }
+.prim-ring {
+  position: absolute; left: 50%; top: 50%; translate: -50% -50%; border-radius: 50%; pointer-events: none;
+  border: 1.5px solid var(--c-blush-ring); opacity: 0;
+}
+.prim-ring--onArt { border-color: var(--c-cream-50); }
+.prim-ring--static { opacity: .8; border-width: 2px; }
+.prim-ring--onArt.prim-ring--static { opacity: .6; }
+.prim-outline { outline: 2px solid var(--c-blush-ring); outline-offset: 3px; border-radius: var(--radius-md); }
+
+/* P36 lightbox */
+.prim-lightbox { position: fixed; inset: 0; z-index: var(--z-lightbox); display: grid; place-items: center; outline: none; padding: 16px; }
+.prim-lightbox__scrim { position: absolute; inset: 0; background: var(--scrim-photo); }
+.prim-lightbox__hero { position: relative; width: min(88vw, 420px); }
+.prim-lightbox__controls { position: absolute; inset: auto 0 max(16px, env(safe-area-inset-bottom)) 0; display: flex; justify-content: center; gap: 12px; }
+.prim-thumb { border: 0; padding: 0; background: none; cursor: pointer; display: block; }
+
+/* P23 flash: below the HUD (z-flash) when full screen; covers its positioned parent otherwise. */
+.prim-flash { pointer-events: none; opacity: 0; background: var(--c-overlay-flash-camera); }
+.prim-flash--impact { background: var(--c-overlay-flash-impact); }
+.prim-flash--fullScreen { position: fixed; inset: 0; z-index: var(--z-flash); }
+.prim-flash--element { position: absolute; inset: 0; z-index: 1; border-radius: inherit; }
+
+/* P37 print slot: clip with 0.25em padding so diacritics on the strip caption never clip. */
+.prim-slot { overflow: hidden; padding: .25em; margin: -.25em; }
+
+/* P12 curtain wash: the wall flattens to its mean colour. */
+.prim-curtain { position: relative; }
+.prim-curtain__wash { position: absolute; inset: 0; background: var(--c-flower-wall-mean); pointer-events: none; }
+
+/* P18 bite tap */
+.prim-bite { position: relative; border: 0; padding: 0; background: none; cursor: pointer; min-width: 44px; min-height: 44px; }
+.prim-bite__charm { position: absolute; right: -4px; top: -6px; width: 16px; fill: var(--t-accent, var(--c-accent-rose)); pointer-events: none; }
+.prim-bite__crumbs { position: absolute; left: 50%; top: 40%; width: 18px; height: 18px; pointer-events: none; }
+.prim-bite__crumb { position: absolute; inset: 0; margin: auto; width: 5px; height: 5px; border-radius: 50%; background: var(--c-butter-200); }
+.prim-bite__note {
+  position: absolute; left: 50%; bottom: calc(100% + 6px); translate: -50% 0; white-space: nowrap; transform-origin: 50% 100%;
+  padding: .3em .7em .28em; border-radius: var(--radius-pill); background: var(--t-note-bubble, var(--c-cream-50)); color: var(--t-ink);
+  font-family: var(--font-hand-body); font-size: 14px; line-height: 1.4; box-shadow: var(--shadow-sm);
+}
+
+/* P47 token */
+.prim-token { position: relative; display: inline-grid; place-items: center; }
+.prim-token > * { grid-area: 1 / 1; }
+.prim-token__heart { width: 22px; fill: var(--c-accent-rose); pointer-events: none; }

@@ -379,6 +379,154 @@ export const primitive = {
       ]
     },
     "evidence": "v2b F15-F16 f1401-1512"
+  },
+  "heartBurst": {
+    "id": "P21",
+    "count": [
+      13,
+      15
+    ],
+    "countLow": 6,
+    "popMs": 100,
+    "popEase": "outBack",
+    "riseVh": [
+      9,
+      12.2
+    ],
+    "riseEase": "outQuad",
+    "fadeMs": 300,
+    "durMs": 1170,
+    "spreadPctW": [
+      -60,
+      60
+    ],
+    "note": "riseVh: ~70 px on the 576 px tall capture = 12.2 vh; C2.heartsRise uses 9% of the height. spreadPctW (of the origin element width) is a starter-kit design choice",
+    "evidence": "v1 #35; v4 C4, B10"
+  },
+  "confettiFountain": {
+    "id": "P22",
+    "count": [
+      11,
+      15
+    ],
+    "countLow": 8,
+    "vy0StripHPerS": -0.6,
+    "gStripHPerS2": 2.36,
+    "spreadPctW": 34,
+    "durMs": 800,
+    "startAfterLandingMs": 33,
+    "sizePctW": [
+      2.6,
+      4.2
+    ],
+    "fadeMs": 200,
+    "spinDegPerS": [
+      240,
+      720
+    ],
+    "note": "strip-relative: units are the target strip's height/width (-230 px/s, 900 px/s2 on a 381 px strip @1024 capture). sizePctW, fadeMs and spin are starter-kit design choices",
+    "evidence": "v1 #25/#29/#33"
+  },
+  "petalField": {
+    "id": "P31",
+    "depthScale": [
+      0.55,
+      0.8,
+      1
+    ],
+    "windVwPerS": [
+      -24,
+      12
+    ],
+    "tumbleDegPerS": [
+      135,
+      270
+    ],
+    "swayVw": [
+      2,
+      4.6
+    ],
+    "swayPeriodMs": [
+      1600,
+      2600
+    ],
+    "onScreen": [
+      1,
+      3
+    ],
+    "sizeVw": [
+      4,
+      7
+    ],
+    "fadeInMs": 100,
+    "note": "windVwPerS = (-0.8, +0.4) vw/frame at 30 fps. depthScale, swayPeriodMs and sizeVw are starter-kit design choices",
+    "evidence": "v2a A-E04, B-21; v2b F10"
+  },
+  "cameraStarburst": {
+    "id": "P23",
+    "scaleFrom": 0.7,
+    "riseMs": 40,
+    "holdMs": 80,
+    "growthPct": 5,
+    "spinDeg": 12,
+    "fadeMs": 80,
+    "twinkles": [
+      2,
+      3
+    ],
+    "sizePctOfSubject": [
+      60,
+      80
+    ],
+    "note": "painted starburst above the flash; total = flash.camera.starburstMs. sizePctOfSubject is a starter-kit design choice",
+    "evidence": "v1 #13-19b f54-82"
+  },
+  "finaleFx": {
+    "id": "C7",
+    "raysCount": [
+      10,
+      14
+    ],
+    "raysMs": [
+      33,
+      66
+    ],
+    "ringScale": [
+      0.2,
+      1.6
+    ],
+    "burstPopMs": [
+      67,
+      100
+    ],
+    "burstSpritesPctOfFinale": 33,
+    "echoCopies": [
+      2,
+      3
+    ],
+    "echoSpacingPctOfFlower": 35,
+    "note": "C7 rays/ring, burst mound and echo trail. ringScale, burstSpritesPctOfFinale and echoSpacingPctOfFlower are starter-kit design choices",
+    "evidence": "v4 D14, D17-D19"
+  },
+  "curtainDrop": {
+    "id": "P12",
+    "yVh": [
+      0,
+      105
+    ],
+    "yMs": 1400,
+    "yEase": "curtainFall",
+    "washFromMs": 33,
+    "washMs": 700,
+    "washPeak": 0.6,
+    "fadeFromMs": 900,
+    "fadeMs": 630,
+    "fadeEase": "inQuad",
+    "maskFromMs": 1100,
+    "maskMs": 430,
+    "unmountMs": 1530,
+    "note": "canvas variant: drops the bloom's cover layer. washPeak (how far the heads flatten to the wall-mean colour) is a starter-kit design choice",
+    "evidence": "v5 A-e12-14 f189-235"
   }
 } as const;
 
