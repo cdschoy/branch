@@ -270,7 +270,7 @@ export const actions: ActionImplMap = {
   idleWobble: (el, ctx) => {
     if (ctx.reduced) { style(el).outline = '2px solid var(--c-blush-ring)'; return { revert: () => { style(el).outline = ''; } }; }
     const segs = wobbleSegments(ctx.seed, 16, P.idleWobble);
-    const x = [0, ...segs.map((s) => `${s.x}%`)], y = [0, ...segs.map((s) => `${s.y}%`)], r = [0, ...segs.map((s) => s.r)];
+    const x = ['0%', ...segs.map((s) => `${s.x}%`)], y = ['0%', ...segs.map((s) => `${s.y}%`)], r = [0, ...segs.map((s) => s.r)];
     const total = segs.reduce((n, s) => n + s.ms, 0);
     const times = [0, ...segs.map((s) => (s.t0 + s.ms) / total)];
     return loop(el, { x, y, rotate: r } as DOMKeyframesDefinition, { ...tw(total, 'inOutSine'), times, repeatType: 'mirror' } as never);

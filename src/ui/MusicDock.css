@@ -1,6 +1,9 @@
-.ui-dock { color: var(--c-plum-panel-title); }
-.ui-dock__title { margin: 0 0 8px; font-family: var(--font-hand-body); font-weight: 500; font-size: 17px; line-height: 1.6; }
+.ui-dock { color: var(--c-plum-panel-title); display: grid; gap: 8px; }
+.ui-dock__head { display: flex; align-items: center; gap: 12px; }
+.ui-dock__title { margin: 0; font-family: var(--font-hand-body); font-weight: 500; font-size: 17px; line-height: 1.6; }
 .ui-dock__list { list-style: none; margin: 0; padding: 0; }
-.ui-dock__track { display: flex; gap: 8px; width: 100%; min-height: 44px; align-items: center; border: 0; background: transparent; color: inherit; font-family: var(--font-ui-sans); font-size: 15px; line-height: 1.5; text-align: left; cursor: pointer; }
+.ui-dock__track { display: flex; gap: 8px; width: 100%; min-height: 44px; align-items: center; border: 0; background: transparent; color: inherit; font-family: var(--font-ui-sans); font-size: 15px; line-height: 1.5; text-align: left; cursor: pointer; padding: 0 4px; border-radius: var(--radius-sm); }
+.ui-dock__num { opacity: .7; white-space: nowrap; }
+.ui-dock__name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .ui-dock__track.is-current { color: var(--c-plum-fab-glyph); }
-.ui-dock__toggle { margin-top: 8px; min-height: 44px; padding: 0 16px; border: 0; border-radius: var(--radius-pill); background: var(--c-accent-forest); color: var(--c-accent-cream-on-forest); font-family: var(--font-ui-sans); font-weight: 600; font-size: 14px; line-height: 1.4; }
+.ui-dock__toggle { justify-self: start; min-height: 44px; padding: 0 16px; border: 0; border-radius: var(--radius-pill); background: var(--c-accent-forest); color: var(--c-accent-cream-on-forest); font-family: var(--font-ui-sans); font-weight: 600; font-size: 14px; line-height: 1.4; cursor: pointer; }

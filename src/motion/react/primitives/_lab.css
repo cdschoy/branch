@@ -1,0 +1,43 @@
+/* Lab helpers (owner: primitives). Token colours only. */
+.plab-stage { position: absolute; inset: 0; display: grid; grid-template-rows: 1fr auto; }
+.plab-stage__art { position: relative; display: grid; place-items: center; min-height: 0; overflow: hidden; }
+.plab-stage__controls { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; align-items: center; padding: 6px 8px 8px; }
+.plab-btn {
+  min-height: 44px; min-width: 44px; padding: 0 14px; border: 0; border-radius: var(--radius-pill); cursor: pointer;
+  background: var(--t-surface, var(--c-cream-50)); color: var(--t-ink); box-shadow: var(--shadow-sm);
+  font-family: var(--font-ui-sans); font-size: 14px; line-height: 1.4; touch-action: manipulation;
+}
+.plab-btn[aria-pressed="true"] { background: var(--c-accent-forest); color: var(--c-accent-cream-on-forest); }
+.plab-readout { position: absolute; left: 8px; top: 6px; font-family: var(--font-ui-sans); font-size: 12px; line-height: 1.4; color: var(--t-ink-muted); }
+.plab-card {
+  background: var(--c-paper-letter); color: var(--t-ink); border-radius: var(--radius-md); box-shadow: var(--shadow-letter, var(--shadow-sm));
+  padding: 14px 16px; font-family: var(--font-hand-body); font-size: 16px; line-height: 1.6; max-width: min(320px, 86%);
+}
+.plab-polaroid {
+  background: var(--c-cream-50); padding: 6px 6px 4px; border-radius: var(--radius-xs); box-shadow: var(--shadow-photo, var(--shadow-sm));
+  display: grid; gap: 2px;
+}
+.plab-polaroid__cap { font-family: var(--font-hand-body); font-size: 12px; line-height: 1.5; color: var(--c-ink-700); text-align: center; }
+.plab-row { display: flex; gap: 10px; align-items: center; justify-content: center; flex-wrap: wrap; }
+.plab-deal { position: relative; display: grid; grid-template-columns: repeat(3, auto); gap: 6px 10px; }
+.plab-window {
+  position: relative; width: 150px; height: 110px; border-radius: var(--radius-md); overflow: hidden;
+  border: 4px solid var(--c-plum-bezel); background: var(--c-ink-700);
+}
+.plab-slot { position: absolute; left: 50%; top: 12px; translate: -50% 0; width: 84px; height: 6px; border-radius: 3px; background: var(--c-ink-700); }
+.plab-strip { width: 56px; padding: 4px; display: grid; gap: 4px; background: var(--c-cream-50); border-radius: var(--radius-xs); box-shadow: var(--shadow-photo, var(--shadow-sm)); }
+.plab-sheet {
+  position: absolute; left: 0; right: 0; bottom: 0; height: 62%; border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  background: var(--t-panel-mid, var(--c-plum-panel-mid)); color: var(--c-cream-50); padding: 14px; box-shadow: var(--shadow-dock, var(--shadow-sm));
+  font-family: var(--font-ui-sans); font-size: 15px; line-height: 1.5;
+}
+.plab-rail { left: auto; top: 8px; bottom: 8px; height: auto; width: 46%; border-radius: var(--radius-lg); right: 8px; }
+.plab-box { width: 120px; height: 84px; border-radius: var(--radius-sm); background: var(--c-blush-300); display: grid; place-items: center; }
+.plab-lid { width: 128px; height: 26px; margin-inline: -4px; border-radius: var(--radius-sm); background: var(--c-accent-rose); }
+.plab-lightbox-photo { background: var(--c-cream-50); padding: 10px 10px 8px; border-radius: var(--radius-xs); box-shadow: var(--shadow-photo, var(--shadow-sm)); }
+.plab-lightbox-photo svg { width: 100%; height: auto; }
+.plab-ribbon { width: 150px; height: 26px; border-radius: 4px; background: var(--c-accent-rose); display: grid; place-items: center; color: var(--c-cream-50); font-family: var(--font-hand-body); font-size: 13px; line-height: 1.4; }
+.plab-wall { width: 100%; height: 100%; background: radial-gradient(circle at 30% 30%, var(--c-flower-peony-hot) 0 12%, transparent 13%), radial-gradient(circle at 70% 60%, var(--c-flower-daisy) 0 10%, transparent 11%), var(--c-flower-wall-mean); }
+.plab-lyric { font-family: var(--font-script-display); font-size: 26px; line-height: 1.7; color: var(--t-ink); text-align: center; padding: 0 12px; }
+.plab-type { font-family: var(--font-hand-body); font-size: 15px; line-height: 1.65; color: var(--t-ink); margin: 0; }
+.plab-coin { width: 30px; height: 30px; border-radius: 50%; background: var(--c-accent-gold); box-shadow: inset 0 0 0 3px var(--c-accent-honey); display: block; }

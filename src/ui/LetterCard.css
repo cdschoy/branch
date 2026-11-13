@@ -1,9 +1,15 @@
 .ui-letter { position: relative; width: min(88vw, 360px); aspect-ratio: .77; padding: 34px 26px 24px; rotate: -1.5deg;
+  display: flex; flex-direction: column;
   background: var(--c-paper-letter); border-radius: var(--radius-xs); box-shadow: var(--shadow-letter); color: var(--c-ink-800);
-  overflow: auto; text-wrap: pretty; }
+  text-wrap: pretty; }
+/* paper grain: two offset dot fields in the blush tint (procedural, no image) */
+.ui-letter::before { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: .35;
+  background-image: radial-gradient(var(--c-blush-100) .6px, transparent .7px), radial-gradient(var(--c-cream-300) .5px, transparent .6px);
+  background-size: 7px 7px, 11px 11px; background-position: 0 0, 3px 5px; }
 .ui-letter__tape { position: absolute; top: -10px; left: 37%; width: 26%; height: 22px; rotate: -5deg; background: var(--c-blush-700); opacity: .73; mix-blend-mode: multiply; }
-.ui-letter__eyebrow { margin: 0 0 8px; font-family: var(--type-ui-eyebrow-family); font-weight: var(--type-ui-eyebrow-weight); font-size: var(--type-ui-eyebrow-size); line-height: var(--type-ui-eyebrow-line-height); letter-spacing: var(--type-ui-eyebrow-tracking); color: var(--c-ink-600); }
-.ui-letter__greeting { margin: 0 0 6px; font-family: var(--type-letter-greeting-family); font-weight: var(--type-letter-greeting-weight); font-size: var(--type-letter-greeting-size); line-height: var(--type-letter-greeting-line-height); }
-.ui-letter__body { margin: 0; font-family: var(--type-letter-body-family); font-size: var(--type-letter-body-size); line-height: var(--type-letter-body-line-height);
-  background-image: linear-gradient(to bottom, transparent calc(var(--type-letter-body-line-height) - 1px), var(--c-blush-100) 0); background-size: 100% var(--type-letter-body-line-height); }
-.ui-letter__signature { margin: 14px 0 0; text-align: right; font-family: var(--font-script-signature); font-size: 28px; line-height: 1.7; padding-top: var(--vi-clip-pad-script); color: var(--c-berry-600); font-synthesis: none; }
+.ui-letter__eyebrow { position: relative; margin: 0 0 8px; font-family: var(--type-ui-eyebrow-family); font-weight: var(--type-ui-eyebrow-weight); font-size: var(--type-ui-eyebrow-size); line-height: var(--type-ui-eyebrow-line-height); letter-spacing: var(--type-ui-eyebrow-tracking); color: var(--c-ink-600); }
+.ui-letter__greeting { position: relative; margin: 0 0 6px; font-family: var(--letter-font, var(--type-letter-greeting-family)); font-weight: var(--type-letter-greeting-weight); font-size: var(--type-letter-greeting-size); line-height: var(--type-letter-greeting-line-height); }
+.ui-letter__body { position: relative; flex: 1; min-height: 0; overflow: auto; margin: 0; font-family: var(--letter-font, var(--type-letter-body-family)); font-size: var(--type-letter-body-size); line-height: var(--type-letter-body-line-height);
+  background-image: linear-gradient(to bottom, transparent calc(var(--type-letter-body-line-height) - 1px), var(--c-blush-100) 0); background-size: 100% var(--type-letter-body-line-height); background-attachment: local; }
+.ui-letter[data-font="scriptSignature"] .ui-letter__body { font-size: 16px; }
+.ui-letter__signature { position: relative; margin: 14px 0 0; text-align: right; font-family: var(--font-script-signature); font-size: 28px; line-height: 1.7; padding-top: var(--vi-clip-pad-script); color: var(--c-berry-600); font-synthesis: none; }

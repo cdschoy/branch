@@ -174,3 +174,39 @@ export function IdleWobble({ active = true, seed = 1, children, className, style
     <div ref={ref} className={cx(className, reduced && active && 'prim-outline')} style={style} data-primitive="idleWobble">{children}</div>
   );
 }
+
+export interface CassetteProps extends LoopProps {
+  /** TRUE media state: pass `state === 'playing'` from the player's playing/pause/waiting events. */
+  playing: boolean;
+  /** Width in px (default 132). */
+  width?: number;
+}
+/**
+ * The songs-page cassette (FRAMEWORK §2 v5 #6, P29): an original sage tape with two separate reels
+ * that counter-rotate at 1.1 s/rev ONLY while `playing`. On pause / waiting the reels freeze at their
+ * current angle (no anti-pattern spin, no snap back). Procedural SVG in token colours.
+ */
+export function Cassette({ playing, active = true, width = 132, className, style }: CassetteProps) {
+  const reel = (
+    <svg viewBox="0 0 24 24" aria-hidden="true" style={{ display: 'block', width: '100%', height: '100%' }}>
+      <circle cx="12" cy="12" r="11" fill="var(--c-cream-50)" />
+      <circle cx="12" cy="12" r="4" fill="var(--c-ink-700)" />
+      {[0, 60, 120, 180, 240, 300].map((a) => (
+        <rect key={a} x="11" y="2.6" width="2" height="4.2" rx="1" fill="var(--c-ink-700)" transform={`rotate(${a} 12 12)`} />
+      ))}
+    </svg>
+  );
+  return (
+    <div className={cx('prim-cassette', className)} style={{ width, ...style }} data-primitive="cassette" data-playing={playing || undefined}>
+      <svg viewBox="0 0 132 84" aria-hidden="true" className="prim-cassette__body">
+        <rect x="2" y="2" width="128" height="80" rx="10" fill="var(--c-accent-sage)" />
+        <rect x="12" y="10" width="108" height="20" rx="4" fill="var(--c-cream-100)" />
+        <path d="M20 20h60" stroke="var(--c-blush-400)" strokeWidth="2" strokeLinecap="round" />
+        <rect x="26" y="36" width="80" height="30" rx="15" fill="var(--c-ink-700)" opacity=".85" />
+        <path d="M34 82 42 70h48l8 12" fill="var(--c-accent-forest-soft)" />
+      </svg>
+      <ReelSpin playing={playing} active={active} className="prim-cassette__reel prim-cassette__reel--l">{reel}</ReelSpin>
+      <ReelSpin playing={playing} active={active} reverse className="prim-cassette__reel prim-cassette__reel--r">{reel}</ReelSpin>
+    </div>
+  );
+}

@@ -25,7 +25,11 @@ export const P = {
   /** P01 stampPop: mount at opacity 1, scale spring.stamp.fromValue → 1; exit opacity-only 60-70 ms linear. */
   stampPop: { fromScale: spring.stamp.fromValue, exitMs: duration.micro, reducedMs: duration.xfast },
   /** P02 stickerPop: scale 0 → 1 on spring.sticker (or outBack 167 ms), opacity over the first 67 ms. */
-  stickerPop: { opacityMs: frames(2), tweenMs: duration.quick },
+  stickerPop: {
+    opacityMs: frames(2), tweenMs: duration.quick,
+    /** After a page change the first sticker mounts with C9.stickerMount (+140 ms); A3 fix: 80-120 ms stagger. */
+    afterPageMs: stepOf('C9page', 'C9.stickerMount').at, staggerMs: frames(3),
+  },
   /** P03 letterPop: opacity .18 → 1 in 67 ms; scale .93 (spring.letterPop.fromValue) → ~1.01 → 1. */
   letterPop: { fromOpacity: 0.18, opacityMs: frames(2), fromScale: spring.letterPop.fromValue, afterLayoutMs: frames(1) },
   /** P04 polaroidDeal: opacity 280 standard; y +5…+12 → 0; scale .90 → 1.02 → 1 over 120-160 ms; rotate tilt − 5° → tilt. */

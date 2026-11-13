@@ -131,8 +131,8 @@ function layout(text: string, unit: 'grapheme' | 'word' | 'line'): { words: Word
  * P42: time-anchored typewriter. n = floor((now − t0 − startDelay) / ms) from ONE ticker callback;
  * glyph spans are pre-laid-out (nowrap per word) and flip an `.on` class (≤20 ms fade), so wrapping
  * never reflows. Rate min(127, 3220/n) ms, floor 25 ms; > 130 graphemes reveal per word. No caret.
- * Tap completes. Reduced motion: the full text at once (tap/cue gates unchanged). The full text is
- * the accessible name; the spans are aria-hidden.
+ * Tap completes. Reduced motion: the full text at once (tap/cue gates unchanged). The full text sits
+ * in a visually hidden span for screen readers; the glyph spans are aria-hidden.
  */
 export function Typewriter({ text, msPer, unit, onCue, as = 'p', play = true, playKey, onDone, className, style }: TypewriterProps) {
   const reduced = useReducedMotion();
@@ -182,10 +182,10 @@ export function Typewriter({ text, msPer, unit, onCue, as = 'p', play = true, pl
       ref={root as never}
       className={cx('prim-tw', complete && 'is-done', className)}
       style={{ ...fade, ...style }}
-      aria-label={clean}
       data-primitive="typewriter"
       data-units={lay.units}
     >
+      <span className="prim-sr">{clean}</span>
       {lay.words.map((w, wi) => (
         <span key={wi}>
           <span className="prim-tw__word" aria-hidden="true">

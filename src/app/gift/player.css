@@ -1,0 +1,145 @@
+/* Recipient player (owner: gift). Colours: theme slots / core tokens only. Durations: --d-* / --e-* tokens. */
+.gift-player { overflow: hidden; }
+.gift-loading, .gift-msg { margin: 0; min-height: 100dvh; display: grid; place-items: center; padding: 16px; text-align: center;
+  font-family: var(--type-hand-label-family); font-size: var(--type-hand-label-size); line-height: var(--type-hand-label-line-height); color: var(--t-ink); }
+.gift-player--msg { display: grid; place-items: center; align-content: center; gap: 12px; }
+.gift-player--msg .gift-msg { min-height: 0; }
+.gift-msg__link { color: var(--t-accent); font-family: var(--font-ui-sans); }
+
+/* ---------------------------------------------------------------- reading scene (pre-mounted) */
+.gift-reading { position: relative; z-index: var(--z-stage); min-height: 100dvh; display: grid; justify-items: center; align-content: start;
+  padding: 64px 16px 120px; }
+.gift-decor { position: absolute; top: 0; left: 50%; translate: -50% 0; width: min(100%, 420px); height: 56px; transform-origin: 50% 0%; pointer-events: none; }
+.gift-letter { position: relative; }
+.gift-letter[data-await="pop"], [data-await="deal"] { opacity: 0; }
+.gift-photos { position: relative; display: grid; grid-template-columns: repeat(3, 1fr); width: min(92vw, 360px); margin-top: 20px; justify-items: center; }
+.gift-photo { grid-row: 1; position: relative; }
+.gift-photo[data-stack] { z-index: 1; }
+.gift-photo .prim-thumb { display: block; padding: 0; border: 0; background: none; cursor: zoom-in; }
+.gift-replaypill { margin-top: 14px; }
+
+/* ---------------------------------------------------------------- chrome (G17) */
+.gift-chrome[data-hidden] { visibility: hidden; }
+.gift-chrome__pull { position: fixed; z-index: var(--z-chrome); left: 16px; bottom: max(16px, env(safe-area-inset-bottom)); }
+.gift-chrome__pull .ui-pull { flex-direction: row-reverse; }
+.gift-chrome__cta { position: fixed; z-index: var(--z-chrome); right: 16px; bottom: max(18px, env(safe-area-inset-bottom)); }
+.gift-days { display: grid; gap: 2px; }
+.gift-days__title { margin: 0; font-family: var(--font-hand-body); font-weight: 500; font-size: 17px; line-height: 1.6; }
+.gift-days__count { margin: 0; font-family: var(--font-script-display); font-weight: 700; font-size: 26px; line-height: 1.7; color: var(--c-plum-fab-glyph); padding-top: var(--vi-clip-pad-script); }
+.gift-days__since { margin: 0; font-family: var(--font-ui-sans); font-size: 14px; line-height: 1.5; opacity: .8; }
+
+/* ---------------------------------------------------------------- C6 lightbox */
+.gift-lb__frame { display: grid; place-items: center; }
+.gift-lb__frame .ui-polaroid { width: min(80vw, 340px) !important; }
+.gift-lb__controls { display: flex; align-items: center; gap: 8px; color: var(--c-cream-50); font-family: var(--type-counter-family); }
+.gift-lb__btn { width: 44px; height: 44px; border: 0; border-radius: 50%; background: var(--c-overlay-tooltip); color: var(--c-cream-50); font-size: 24px; line-height: 1; cursor: pointer; }
+.gift-lb__counter { min-width: 56px; text-align: center; font-size: 15px; line-height: 1.4; }
+
+/* ---------------------------------------------------------------- openers */
+.gift-opener { position: fixed; inset: 0; z-index: var(--z-hud); overflow: hidden; touch-action: manipulation; }
+.gift-opener__bg { position: absolute; inset: 0; background: var(--t-bg);
+  background-image: radial-gradient(circle at 20% 15%, var(--t-bg-alt, var(--t-bg)) 0 1.5px, transparent 2px); background-size: 22px 22px; }
+.gift-opener[data-wall] .gift-opener__bg { visibility: hidden; transition: visibility 0s linear var(--d-crossfade); }
+.gift-opener__from { position: absolute; top: 9dvh; left: 16px; right: 16px; margin: 0; text-align: center; text-wrap: balance;
+  font-family: var(--type-display-hero-family); font-weight: var(--type-display-hero-weight); font-size: clamp(26px, 8vw, 36px); line-height: var(--type-display-hero-line-height);
+  padding-top: var(--type-display-hero-padding-top); color: var(--t-display); }
+.gift-label { margin: 0; text-align: center; font-family: var(--type-hand-label-family); font-weight: var(--type-hand-label-weight); font-size: var(--type-hand-label-size);
+  line-height: var(--type-hand-label-line-height); letter-spacing: var(--type-hand-label-tracking); color: var(--t-ink-muted, var(--t-ink)); }
+.gift-sublabel { margin: 2px 0 0; text-align: center; font-family: var(--font-ui-sans); font-size: 14px; line-height: 1.5; color: var(--t-ink-muted, var(--t-ink)); }
+.gift-fallback { position: absolute; left: 50%; translate: -50% 0; top: calc(100% + 8dvh + 44px); }
+.gift-skip { position: absolute; z-index: 2; top: max(12px, env(safe-area-inset-top)); right: 12px; }
+
+/* envelope (C1) */
+.gift-hero { position: absolute; left: 50%; top: 44%; translate: -50% -50%; width: min(70vw, 280px); }
+.gift-envelope { position: relative; }
+.gift-envelope__btn { display: block; width: 100%; padding: 0; border: 0; background: none; cursor: pointer; filter: drop-shadow(var(--shadow-object)); }
+.gift-envelope__btn:disabled { cursor: default; }
+.gift-envelope__art { display: grid; aspect-ratio: 240 / 170; }
+.gift-layer { grid-area: 1 / 1; }
+.gift-envelope__ring { position: absolute; left: 50%; top: 59%; width: 44px; height: 44px; translate: -50% -50%; pointer-events: none; }
+.gift-bouquet { position: absolute; left: 50%; top: 46%; translate: -50% -50%; pointer-events: none; }
+.gift-bloom-origin { position: absolute; left: 50%; top: 50%; width: 2px; height: 2px; pointer-events: none; }
+.gift-hero > .gift-label { position: absolute; left: 0; right: 0; top: calc(100% + 8dvh - 1em); }
+.gift-wall { position: absolute; inset: 0; z-index: 1; opacity: 0; overflow: hidden; pointer-events: none; transition: opacity var(--d-crossfade) var(--e-linear); }
+.gift-opener[data-wall] .gift-wall { opacity: 1; }
+.gift-wall__strip { position: absolute; inset: 0 0 auto 0; height: 200dvh; display: grid; grid-template-rows: 1fr 1fr; }
+.gift-wall__tile { overflow: hidden; }
+.gift-wall[data-drift] .gift-wall__strip { animation: gift-wall-drift var(--wall-drift-s) linear infinite; }
+@keyframes gift-wall-drift { from { transform: translateY(0); } to { transform: translateY(-100dvh); } }
+.gift-wall__wash { position: absolute; inset: 0; background: var(--c-flower-wall-mean); opacity: 0; }
+.gift-prompt { position: absolute; z-index: 2; left: 0; right: 0; bottom: 18dvh; display: grid; justify-items: center; pointer-events: none; }
+.gift-prompt[data-shown] { pointer-events: auto; }
+.gift-prompt__btn { min-height: 44px; padding: 6px 18px; border: 0; border-radius: var(--radius-pill); background: var(--c-cream-50); color: var(--t-ink);
+  font-family: var(--type-hand-label-family); font-size: var(--type-hand-label-size); line-height: var(--type-hand-label-line-height); box-shadow: var(--shadow-pill-edge); cursor: pointer; }
+
+/* box (C2) */
+/* no transform on the stage: the C2c badge is position: fixed and must stay relative to the viewport */
+.gift-boxstage { --W: min(62vw, 240px); position: absolute; left: 50%; top: 40%; margin: calc(var(--W) * -.34) 0 0 calc(var(--W) * -.5); width: var(--W); }
+.gift-box { --W: min(62vw, 240px); position: relative; width: var(--W); aspect-ratio: 220 / 150; }
+.gift-box__sway { position: absolute; inset: 0; }
+.gift-box__body { position: absolute; inset: 0; z-index: 1; filter: drop-shadow(var(--shadow-object)); }
+.gift-box__inside { position: absolute; left: 0; right: 0; top: calc(var(--W) * -.03); height: calc(var(--W) * .1); z-index: 0; }
+.gift-box__lid { position: absolute; z-index: 3; backface-visibility: hidden; left: calc(var(--W) * -.035); width: calc(var(--W) * 1.07); top: calc(var(--W) * -.13); height: calc(var(--W) * .21); }
+.gift-box__hearts { position: absolute; left: 30%; right: 30%; top: -20%; height: 20%; pointer-events: none; }
+.gift-ribbon { position: absolute; inset: 0; z-index: 4; pointer-events: none; }
+.gift-ribbon__bands { position: absolute; left: calc(var(--W) * -.035); width: calc(var(--W) * 1.07); top: calc(var(--W) * -.13); height: calc(var(--W) * .812); }
+.gift-ribbon__bands svg { width: 100%; height: 100%; }
+.gift-ribbon__bow { position: absolute; pointer-events: auto; left: calc(var(--W) * .128); top: calc(var(--W) * -.3315); width: calc(var(--W) * 1.1); height: calc(var(--W) * .465);
+  padding: 0; border: 0; background: none; cursor: grab; touch-action: none; overflow: visible; }
+.gift-ribbon__bow:disabled { cursor: default; }
+.gift-ribbon__bow > svg { display: block; overflow: visible; }
+.gift-ribbon__knot { position: absolute; left: calc(var(--W) * .44); top: calc(var(--W) * -.18); width: calc(var(--W) * .12); height: calc(var(--W) * .12); scale: .8; }
+.gift-ribbon__heart { position: absolute; left: calc(var(--W) * .34); top: calc(var(--W) * .02); width: 14px; height: 13px; opacity: 0;
+  background: var(--c-blush-400); clip-path: path('M7 13 1 7A3.4 3.4 0 0 1 7 2.6 3.4 3.4 0 0 1 13 7Z'); }
+.gift-ribbon__glint { position: absolute; left: 34%; top: 38%; width: 54%; height: 26%; border-radius: 8px; pointer-events: none; opacity: 0;
+  background: linear-gradient(100deg, transparent 30%, var(--c-cream-50) 50%, transparent 70%); background-size: 250% 100%; mix-blend-mode: soft-light; }
+.gift-ribbon__glint[data-on] { animation: gift-glint calc(var(--d-dock) * 2) var(--e-in-out-sine) 2 var(--d-flip); }
+@keyframes gift-glint { 0% { opacity: 0; background-position: 120% 0; } 30% { opacity: 1; } 100% { opacity: 0; background-position: -60% 0; } }
+.gift-ribbon__ring { position: absolute; right: 26%; top: 50%; width: 44px; height: 44px; translate: 50% -50%; pointer-events: none; }
+.gift-pile { position: absolute; width: calc(var(--W) * .4); right: calc(var(--W) * -.3); top: calc(100% + 18dvh - var(--W) * .1); }
+.gift-labels { position: absolute; left: -20%; right: -20%; top: calc(100% + 20px); }
+.gift-boxprops { position: absolute; left: 50%; translate: -50% 0; width: min(92vw, 360px); bottom: calc(100% - 18dvh + var(--W) * .02); display: grid; justify-items: center; gap: 6px; pointer-events: none; }
+.gift-pennants { display: flex; gap: 22px; }
+.gift-pennant { width: 26px; height: 34px; }
+.gift-caption { margin: 0; text-align: center; font-family: var(--type-hand-label-family); font-size: var(--type-hand-label-size); line-height: var(--type-hand-label-line-height); color: var(--t-ink); }
+.gift-treats { display: flex; gap: 14px; opacity: 0; pointer-events: none; transition: opacity var(--d-base) var(--e-out-quad); }
+.gift-treats[data-on] { opacity: 1; pointer-events: auto; }
+.gift-treat { position: relative; width: 76px; height: 76px; border: 0; padding: 0; background: none; cursor: pointer; }
+.gift-treat__art { display: block; width: 100%; height: 100%; }
+.gift-treats[data-twinkle] .gift-treat__art { animation: gift-twinkle var(--twinkle-ms) var(--e-in-out-sine) infinite alternate; }
+.gift-treats[data-twinkle] .gift-treat:nth-child(2) .gift-treat__art { animation-duration: var(--twinkle-ms-2); }
+@keyframes gift-twinkle { from { filter: brightness(1); } to { filter: brightness(1.08) drop-shadow(0 0 4px var(--c-accent-twinkle)); } }
+.gift-sticker { position: absolute; left: 39%; top: 30%; width: 22%; aspect-ratio: 60 / 56; z-index: 2; pointer-events: none; }
+.gift-note { position: absolute; left: -20%; right: -20%; top: calc(100% + 18dvh + 18px); display: grid; justify-items: center; }
+.gift-note > span { padding: 6px 14px; border-radius: var(--radius-md); background: var(--t-note-bubble, var(--c-cream-50)); color: var(--t-ink);
+  font-family: var(--type-tooltip-family); font-size: var(--type-tooltip-size); line-height: var(--type-tooltip-line-height); box-shadow: var(--shadow-popover); }
+/* C2c: the reading scene is revealed under the spread; the opener keeps only its props + badge */
+.gift-opener[data-spread] { pointer-events: none; }
+.gift-opener[data-spread] .gift-opener__bg, .gift-opener[data-spread] .gift-opener__from, .gift-opener[data-spread] .gift-labels { visibility: hidden; }
+/* the 72 px badge the box becomes after C2c (opener and reading scene share the spot) */
+.gift-box.is-badge { position: fixed; z-index: var(--z-chrome); top: 12px; left: 12px; --W: 72px; }
+.gift-box.is-badge .gift-ribbon, .gift-box.is-badge .gift-box__lid, .gift-box.is-badge .gift-box__inside, .gift-box.is-badge .gift-sticker { display: none; }
+.gift-box--static { pointer-events: none; }
+
+/* ---------------------------------------------------------------- C7 finale + C13 end card */
+.gift-finale { position: fixed; inset: 0; z-index: var(--z-cover); }
+.gift-finale__veil { position: absolute; inset: 0; }
+.gift-finale__flash { position: absolute; inset: 0; background: var(--c-overlay-flash-impact); }
+.gift-finale__centre { position: absolute; left: 50%; top: 50%; width: 2px; height: 2px; }
+.gift-finale__hero { position: fixed; left: 0; top: 0; width: 20vw; max-width: 160px; aspect-ratio: 1; }
+.gift-finale__hero svg { width: 100%; height: 100%; display: block; }
+.gift-end { position: fixed; inset: 0; z-index: var(--z-modal); display: grid; align-content: center; justify-items: center; gap: 10px; padding: 72px 20px 32px;
+  background: var(--t-bg); text-align: center; opacity: 0; }
+.gift-end[data-ready] { opacity: 1; }
+.gift-end[data-reduced] { transition: opacity var(--d-modal) var(--e-out-quad); }
+.gift-decor--end { position: absolute; }
+.gift-end__title { margin: 0; font-family: var(--type-display-hero-family); font-weight: var(--type-display-hero-weight); font-size: clamp(28px, 8.5vw, 40px);
+  line-height: var(--type-display-hero-line-height); padding-top: var(--type-display-hero-padding-top); color: var(--t-display); text-wrap: balance; }
+.gift-end__from { margin: 0; font-family: var(--font-hand-body); font-size: 17px; line-height: 1.6; color: var(--t-ink-muted, var(--t-ink)); }
+.gift-end__actions { display: grid; justify-items: center; gap: 10px; margin-top: 12px; }
+.gift-end__reply { margin: 8px 0 0; font-family: var(--type-ui-eyebrow-family); font-size: var(--type-ui-eyebrow-size); line-height: var(--type-ui-eyebrow-line-height); color: var(--t-ink-muted, var(--t-ink)); }
+
+.gift-washi { display: block; }
+/* the continue object sits bottom-right: its guard tooltip rises above it, inside the viewport */
+.gift-chrome__cta .ui-continue__tip { top: auto; bottom: calc(100% + 6px); }
+.gift-paintedwall { display: block; width: 100%; height: 100%; }

@@ -2,6 +2,7 @@
 
 /* P42 typewriter: glyphs are laid out from the start (no reflow), words never break inside. */
 .prim-tw__word { white-space: nowrap; }
+.prim-sr { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
 .prim-tw__g { opacity: 0; transition: opacity var(--tw-fade, 0ms) linear; }
 .prim-tw__g.on, .prim-tw.is-done .prim-tw__g { opacity: 1; }
 
@@ -58,3 +59,10 @@
 .prim-token { position: relative; display: inline-grid; place-items: center; }
 .prim-token > * { grid-area: 1 / 1; }
 .prim-token__heart { width: 22px; fill: var(--c-accent-rose); pointer-events: none; }
+
+/* P29 cassette: reels sit over the window holes of the body art. */
+.prim-cassette { position: relative; aspect-ratio: 132 / 84; }
+.prim-cassette__body { position: absolute; inset: 0; width: 100%; height: 100%; }
+.prim-cassette__reel { position: absolute; top: 47.6%; width: 16.7%; aspect-ratio: 1; }
+.prim-cassette__reel--l { left: 25%; }
+.prim-cassette__reel--r { right: 25%; }
