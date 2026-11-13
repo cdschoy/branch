@@ -5,7 +5,7 @@
  * Guards read the pure validators below so the UI and the machine agree.
  */
 import { defineMachine } from './core';
-import type { GiftContentV1, LetterPage, MemoriesPage } from '../gift-schema';
+import { LIMITS, type GiftContentV1, type LetterPage, type MemoriesPage } from '../gift-schema';
 import { graphemeCount, nfc } from '../i18n';
 
 export type CreatorState = 'mechanic' | 'theme' | 'people' | 'photos' | 'letter' | 'songs' | 'review' | 'published';
@@ -24,8 +24,9 @@ export const prevStep = step(-1);
 /** The three groups shown as dots (never a step counter, §5.2). */
 export const creatorGroup = (s: CreatorState): 0 | 1 | 2 => (['mechanic', 'theme', 'people'].includes(s) ? 0 : s === 'review' || s === 'published' ? 2 : 1);
 
-export const NAME_MAX = 24;
-export const BODY_MAX = 1200;
+/** Same numbers the decoder enforces (gift-schema LIMITS is the single source). */
+export const NAME_MAX = LIMITS.nameGraphemes;
+export const BODY_MAX = LIMITS.bodyGraphemes;
 
 export const letterOf = (d: GiftContentV1 | null): LetterPage | undefined => d?.pages.find((p): p is LetterPage => p.kind === 'letter');
 export const photosOf = (d: GiftContentV1 | null): MemoriesPage['photos'] => d?.pages.find((p): p is MemoriesPage => p.kind === 'memories')?.photos ?? [];

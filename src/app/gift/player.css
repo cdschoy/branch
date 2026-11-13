@@ -4,7 +4,7 @@
   font-family: var(--type-hand-label-family); font-size: var(--type-hand-label-size); line-height: var(--type-hand-label-line-height); color: var(--t-ink); }
 .gift-player--msg { display: grid; place-items: center; align-content: center; gap: 12px; }
 .gift-player--msg .gift-msg { min-height: 0; }
-.gift-msg__link { color: var(--t-accent); font-family: var(--font-ui-sans); }
+.gift-msg__link { color: var(--t-accent); font-family: var(--font-ui-sans); display: inline-flex; align-items: center; min-height: 44px; padding-inline: 8px; }
 
 /* ---------------------------------------------------------------- reading scene (pre-mounted) */
 .gift-reading { position: relative; z-index: var(--z-stage); min-height: 100dvh; display: grid; justify-items: center; align-content: start;
@@ -105,10 +105,14 @@
 .gift-treats { display: flex; gap: 14px; opacity: 0; pointer-events: none; transition: opacity var(--d-base) var(--e-out-quad); }
 .gift-treats[data-on] { opacity: 1; pointer-events: auto; }
 .gift-treat { position: relative; width: 76px; height: 76px; border: 0; padding: 0; background: none; cursor: pointer; }
-.gift-treat__art { display: block; width: 100%; height: 100%; }
-.gift-treats[data-twinkle] .gift-treat__art { animation: gift-twinkle var(--twinkle-ms) var(--e-in-out-sine) infinite alternate; }
-.gift-treats[data-twinkle] .gift-treat:nth-child(2) .gift-treat__art { animation-duration: var(--twinkle-ms-2); }
-@keyframes gift-twinkle { from { filter: brightness(1); } to { filter: brightness(1.08) drop-shadow(0 0 4px var(--c-accent-twinkle)); } }
+.gift-treat__art { position: relative; display: block; width: 100%; height: 100%; }
+/* Twinkle: a baked halo sprite behind each treat; only its opacity / scale animate (§9: no animated filter).
+   Off on the low tier and under reduced motion (BoxOpener leaves data-twinkle unset). */
+.gift-treat::before { content: ""; position: absolute; inset: -10%; border-radius: 50%; pointer-events: none; opacity: 0;
+  background: radial-gradient(closest-side, var(--c-accent-twinkle), transparent); }
+.gift-treats[data-twinkle] .gift-treat::before { animation: gift-twinkle var(--twinkle-ms) var(--e-in-out-sine) infinite alternate; }
+.gift-treats[data-twinkle] .gift-treat:nth-child(2)::before { animation-duration: var(--twinkle-ms-2); }
+@keyframes gift-twinkle { from { opacity: 0; transform: scale(.92); } to { opacity: .45; transform: scale(1); } }
 .gift-sticker { position: absolute; left: 39%; top: 30%; width: 22%; aspect-ratio: 60 / 56; z-index: 2; pointer-events: none; }
 .gift-note { position: absolute; left: -20%; right: -20%; top: calc(100% + 18dvh + 18px); display: grid; justify-items: center; }
 .gift-note > span { padding: 6px 14px; border-radius: var(--radius-md); background: var(--t-note-bubble, var(--c-cream-50)); color: var(--t-ink);
@@ -123,6 +127,7 @@
 
 /* ---------------------------------------------------------------- C7 finale + C13 end card */
 .gift-finale { position: fixed; inset: 0; z-index: var(--z-cover); }
+.gift-finale[data-idle] { pointer-events: none; } /* pre-mounted: every layer is still at opacity 0 */
 .gift-finale__veil { position: absolute; inset: 0; }
 .gift-finale__flash { position: absolute; inset: 0; background: var(--c-overlay-flash-impact); }
 .gift-finale__centre { position: absolute; left: 50%; top: 50%; width: 2px; height: 2px; }

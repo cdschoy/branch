@@ -60,15 +60,23 @@ function resolve(ref: TargetRef): { el: Element | null; run?: TargetBinding['run
 function isPlanList(x: unknown): x is readonly DomAnimationPlan[] { return Array.isArray(x); }
 function isPlan(x: unknown): x is DomAnimationPlan { return !!x && typeof x === 'object' && 'keyframes' in (x as object); }
 
-/** Wrap Motion controls as a StepControl with drift correction. */
-function wrapAnims(anims: AnimationPlaybackControls[], speed: number): Internal {
+/**
+ * Wrap Motion controls as a StepControl with drift correction. A step that starts late (after a long
+ * frame) is created already `startedAt` ms in (a negative delay), so it never renders its first
+ * keyframe and then jumps; the animations' own clock therefore reads `step-local − startedAt`.
+ * Drift correction only moves an animation FORWARD and only once it is running, so a pending WAAPI
+ * start can never pull a value backwards (§9 A6: no blink).
+ */
+function wrapAnims(anims: AnimationPlaybackControls[], speed: number, startedAt: number): Internal {
   anims.forEach((a) => { a.speed = speed; });
+  const own = (ms: number) => Math.max(0, ms - startedAt) / 1000;
   return {
-    seek: (ms) => anims.forEach((a) => { a.time = Math.max(0, ms) / 1000; }),
+    seek: (ms) => anims.forEach((a) => { a.time = own(ms); }),
     tick: (ms) => anims.forEach((a) => {
       const dur = (a.duration || 0) * 1000;
-      if (ms > dur) return;
-      if (Math.abs(a.time * 1000 - ms) > FRAME * 2) a.time = ms / 1000;
+      if (ms - startedAt > dur || a.state !== 'running') return;
+      const target = own(ms);
+      if ((target - a.time) * 1000 > FRAME * 2) a.time = target;
     }),
     pause: () => anims.forEach((a) => a.pause()),
     resume: () => anims.forEach((a) => a.play()),
@@ -173,6 +181,8 @@ export function createDirector(deps: { ticker?: Ticker; fx?: FxBridge | null } =
           controls.push(adopt(c));
           continue;
         }
+        // A canvas action the fx bridge already drew for one part (e.g. 'rays+ring') is done for all parts.
+        if (fxDone && CANVAS_ACTIONS.has(step.action)) continue;
         if (!r.el) { if (!r.run) warnOnce(`${spec.id}:${part}`, `[director] ${spec.id}: no target "${part}" for ${step.name}`); continue; }
         const el = r.el as HTMLElement | SVGElement;
         let impl = registry[step.action];
@@ -181,14 +191,17 @@ export function createDirector(deps: { ticker?: Ticker; fx?: FxBridge | null } =
         if (!out) continue;
         if (isPlanList(out) || isPlan(out)) {
           const plans = isPlanList(out) ? out : [out];
-          const anims = plans.map((p) => animate(p.el ?? el, p.keyframes, p.transition) as unknown as AnimationPlaybackControls);
-          controls.push(wrapAnims(anims, scale));
+          const late = Math.max(0, local) / 1000;
+          const anims = plans.map((p) => animate(p.el ?? el, p.keyframes,
+            late ? { ...p.transition, delay: ((p.transition as { delay?: number } | undefined)?.delay ?? 0) - late } : p.transition) as unknown as AnimationPlaybackControls);
+          controls.push(wrapAnims(anims, scale, Math.max(0, local)));
         } else {
           controls.push(adopt(out as StepControl));
         }
       }
       rec.control = combine(controls);
       if (paused) rec.control?.pause?.();
+      // DOM animations were created `local` ms in already; seek only matters for custom / fx controls.
       if (local > 0) rec.control?.seek?.(local);
       opts.onStep?.(step, 'start');
     }

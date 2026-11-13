@@ -22,6 +22,9 @@ export interface Names {
   you: string;
   /** Particle: 'nhe' → "nhé" (north), 'nha' → "nha" (south). */
   tone: 'nhe' | 'nha';
+  /** Pronoun set id the creator picked (vi.json → pronouns: 'anh-em' | 'em-anh' | 'to-cau' | 'minh-ban' | 'none').
+   *  Lets {we}/{We} and the north 'to-cau' override resolve; older links infer it from self/you. */
+  pronouns?: string;
 }
 
 /** A media reference. Server: uuid resolved to a signed URL by /api/gift/[slug]/open. Local starter:

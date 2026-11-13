@@ -11,7 +11,7 @@
  * Idle: one trapezoid-sway prop (the box) + the hint ring / glint on the ribbon tail (G3).
  */
 import { useCallback, useEffect, useRef, useState, type CSSProperties, type KeyboardEvent, type PointerEvent as RPointerEvent } from 'react';
-import { choreography, ticker, type Run, type Spec, type TargetMap } from '../../../motion/core';
+import { choreography, getTier, ticker, type Run, type Spec, type TargetMap } from '../../../motion/core';
 import { ease } from '../../../motion/core/actions/math';
 import { snapshotLayout } from '../../../motion/core/actions/primitives';
 import { usePlay, useReducedMotion, TrapezoidSway, BiteTap, useHintLadder } from '../../../motion/react';
@@ -203,6 +203,14 @@ export function BoxOpener({ gift, voice, seed, state, ctx, send, reading, timeSc
         : taken === 1 ? t('gift.treats.firstBite', { count: left }, voice)
           : t('gift.treats.left', { count: left }, voice);
   const showFallback = landing && (ladder === 'double' || ladder === 'retype');
+  const treatsLive = state === 'treats';
+  const treatsRef = useRef<HTMLDivElement>(null);
+  // When the lid opens, hand focus to the first treat (keyboard users land on what they can act on).
+  useEffect(() => {
+    if (!treatsLive) return;
+    const first = treatsRef.current?.querySelector<HTMLButtonElement>('button');
+    if (first && (document.activeElement === document.body || !root.current?.contains(document.activeElement) || document.activeElement === root.current)) first.focus({ preventScroll: true });
+  }, [treatsLive]);
 
   return (
     <div ref={root} className="gift-opener gift-opener--box" data-testid="gift-opener" onPointerDown={onStage} data-badge={badge || undefined} data-spread={state === 'spreading' || undefined}>
@@ -214,13 +222,15 @@ export function BoxOpener({ gift, voice, seed, state, ctx, send, reading, timeSc
           <div className="gift-pennants" aria-hidden="true">
             {pennants.map((r, i) => <div key={i} ref={r} className="gift-pennant" style={{ opacity: 0 }}><Pennant fill={PENNANTS[i]!} /></div>)}
           </div>
-          <p ref={caption} className="gift-caption" style={{ opacity: 0 }}>{t('gift.treats.prompt', {}, voice)}</p>
-          <div className="gift-treats" data-on={treatsOn || undefined} data-twinkle={twinkle && !reduced ? '' : undefined}
+          <p ref={caption} className="gift-caption" style={{ opacity: 0 }} aria-hidden={!treatsLive || undefined}>{t('gift.treats.prompt', {}, voice)}</p>
+          {/* Hidden under the lid until the box opens: not focusable, not announced (inert + aria-hidden). */}
+          <div ref={treatsRef} className="gift-treats" data-on={treatsOn || undefined} inert={!treatsLive} aria-hidden={!treatsLive || undefined}
+            data-twinkle={twinkle && !reduced && getTier() !== 'low' ? '' : undefined}
             style={{ '--twinkle-ms': `${G.treats.twinkleMs[0]}ms`, '--twinkle-ms-2': `${G.treats.twinkleMs[1]}ms` } as CSSProperties}>
             {[0, 1, 2].map((i) => {
               const b = ctx.bites[i] ?? 0;
               return (
-                <BiteTap key={i} className="gift-treat" bites={b} remaining={left} ariaLabel={t('gift.treats.aria', { index: i + 1 })}
+                <BiteTap key={i} className="gift-treat" bites={b} remaining={left} note={false} ariaLabel={t('gift.treats.aria', { index: i + 1 })}
                   onBite={() => { if (state === 'treats' && b < BITES_PER_TREAT) { playSfx('tap'); send({ type: 'BITE', treat: i }); } }}>
                   <span data-testid={`gift-treat-${i}`} className="gift-treat__art"><Treat kind={i as 0 | 1 | 2} bites={b} /></span>
                 </BiteTap>

@@ -13,7 +13,12 @@ const SHOT_AT = { P38: 0.3, 'P38.wipe': 0.35, 'P38.flood': 0.4, P39: 0.5, 'fx.cu
 const canvasStats = (page) => page.evaluate(async () => {
   await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
   const c = document.querySelector('[data-testid="fx-canvas"]');
-  const d = c.getContext('2d').getImageData(0, 0, c.width, c.height).data;
+  // read back through a fresh CPU canvas so the app's (GPU) fx canvas is never read repeatedly
+  const o = document.createElement('canvas');
+  o.width = c.width; o.height = c.height;
+  const g = o.getContext('2d', { willReadFrequently: true });
+  g.drawImage(c, 0, 0);
+  const d = g.getImageData(0, 0, c.width, c.height).data;
   let painted = 0, h = 2166136261;
   for (let i = 3; i < d.length; i += 4 * 7) {
     if (d[i] > 8) painted++;
@@ -129,6 +134,7 @@ export const tests = {
   },
 
   async circuitBreaker(t) {
+    t.allowConsole(/breaker tripped/); // the warning is the behaviour under test
     const page = await t.newPage();
     const warns = [];
     page.on('console', (m) => { if (m.type() === 'warning' && m.text().includes('breaker tripped')) warns.push(m.text()); });

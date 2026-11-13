@@ -8,7 +8,7 @@
  * TODO(lead): these rows could move into motion-tokens.json → primitive (P01-P43) so build.py
  * checks them. Until then this file is their single home, and no component holds a literal.
  */
-import { choreography, duration, flash, primitive, spring, stagger, ambient, hintLadder, prompt, booth, type Step } from '../tokens';
+import { choreography, duration, flash, primitive, spring, stagger, ambient, hintLadder, prompt, booth, type EasingName, type Step } from '../tokens';
 
 /** One 30 fps evidence frame (33 ms) and multiples of it (67 ms = 2 frames, 133 ms = 4 frames…). */
 export const frames = (n: number): number => Math.round(n * (1000 / 30));
@@ -54,6 +54,7 @@ export const P = {
   curtainDrop: stepOf('C1b', 'C1.curtainDrop').params as {
     readonly yVh: readonly [number, number]; readonly washFromMs: number; readonly washMs: number;
     readonly fadeFromMs: number; readonly fadeMs: number; readonly maskFromMs: number; readonly maskMs: number;
+    readonly washEase: EasingName; readonly fadeEase: EasingName; readonly maskEase: EasingName;
   },
   curtainFallMs: frames(42),
   /** P15 tapWobble: rotate [0, −2, 1.9, −1]° at [0, .33, .62, 1], 233 ms inOutSine; keeps −1°. */

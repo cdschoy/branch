@@ -102,7 +102,8 @@ async function readToTheEnd(t, page, { prefix, photos, drawer }) {
     await page.locator('[data-testid="gift-continue"] button').click({ force: true });
     await settle(page, 250);
     t.expect(await page.locator('.ui-continue__tip').isVisible(), 'guard tooltip on an early continue tap');
-    t.expect(!(await page.getByTestId('gift-finale').count()), 'finale is gated on readEnough');
+    // the C7 overlay is pre-mounted idle (data-idle) while reading; it must not be playing yet
+    t.expect(!(await page.locator('[data-testid="gift-finale"]:not([data-idle])').count()), 'finale is gated on readEnough');
     await t.shot(page, `${prefix}-5-guard`);
   }
 

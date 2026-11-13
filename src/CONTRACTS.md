@@ -38,7 +38,7 @@ The owners are `scaffold` (frozen, lead only), `primitives`, `fx`, `booth` and `
 | `npm run build` / `npm run preview` | Production build, then preview on port 4173 |
 | `npm run typecheck` | `tsc --noEmit` (TypeScript 7, strict + `noUncheckedIndexedAccess`) |
 | `npm test` | Vitest unit tests (`src/**/*.test.ts(x)`, node environment) |
-| `npm run e2e [-- filter…]` | `node e2e/run.mjs`: builds if `dist/` is missing, starts preview and runs `e2e/*.spec.mjs` in Chromium (fake camera, 390×844) |
+| `npm run e2e [-- filter…]` | `node e2e/run.mjs`: builds if `dist/` is missing (`E2E_BUILD=1` forces it), starts preview on a free port and runs `e2e/*.spec.mjs` in Chromium (fake camera, 390×844). Exits non-zero on any failure, console error/warning, uncaught exception or failed same-origin request; `t.allowConsole(re)` allows an expected message |
 | `npm run tokens` / `npm run strings` | Regenerate the tokens / `vi.json` |
 
 Path aliases (tsconfig + vite): `@/…` → `src/`, `@tokens/…` → `design-tokens/`, `@strings/…` → `i18n/`.
@@ -182,7 +182,7 @@ Path aliases (tsconfig + vite): `@/…` → `src/`, `@tokens/…` → `design-to
    | Pops | `StampPop`, `StickerPop`, `LetterPop`, `PolaroidDeal { index, tiltDeg, stack? }` |
    | Surfaces | `DrawerSlide { open, variant: 'sheet' \| 'rail' \| 'dock', onOpened?, onClosed? }`, `PageCrossfade { pageKey }`, `PaperDipCrossfade { state, render, onDone? }`, `LidFlip3D { open, lid, box, onDone? }`, `SharedLightbox { open, layoutId, onClose }`, `ContentSwapInShell { contentKey }` |
    | Text | `TextBlurIn { variant? }`, `TooltipRise { show }`, `TimedPrompt { show }`, `Typewriter { text, msPer?, unit?, onCue?, as? }` |
-   | Gestures | `useTapWobble(ref) → () => Promise<void>`, `usePressSquash(kind) → pointer handlers`, `HoverGrow { amount? }`, `BiteTap { bites, remaining, onBite, ariaLabel }` |
+   | Gestures | `useTapWobble(ref) → () => Promise<void>`, `usePressSquash(kind) → pointer handlers`, `HoverGrow { amount? }`, `BiteTap { bites, remaining, onBite, ariaLabel, note? }` |
    | Ambient | `IdleFloat`, `TrapezoidSway`, `Pendulum { impulse? }`, `HintPulse { tone?, size? }`, `ReelSpin { playing, reverse? }`, `IdleWobble` |
    | Physical | `WhipOff`, `CurtainDrop`, `CameraFlash { fire, kind?, scope?, onPeak?, onDone? }`, `SlotPrint { durationMs? }`, `Toss { from, arcMs?, restDeg }`, `TokenDrop`, `HardCut { value }` (done) |
 

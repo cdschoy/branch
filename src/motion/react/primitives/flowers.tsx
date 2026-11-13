@@ -8,9 +8,11 @@
  * static heart fading in/out, confetti is off (onDone on the next frame).
  */
 import { useEffect, useRef, type RefObject } from 'react';
-import { fx, type EmitterId } from '../../../fx';
-import { probeEmitter, rectOf } from '../../../fx/bridge';
+import type { EmitterId } from '../../../fx/types';
 import { useReducedMotion } from '../hooks';
+
+/** The fx engine is loaded on first use (it is not part of any route's first-tap JS, §7.7). */
+const loadFx = () => Promise.all([import('../../../fx/engine'), import('../../../fx/bridge')]).then(([e, b]) => ({ fx: e.fx, probeEmitter: b.probeEmitter, rectOf: b.rectOf }));
 
 export type CurtainMode = 'reveal' | 'wipe' | 'bloom' | 'flood';
 const MODE: Record<CurtainMode, EmitterId> = { reveal: 'curtainReveal', wipe: 'curtainWipe', bloom: 'bloom', flood: 'flood' };
@@ -29,32 +31,37 @@ function useEmit(id: EmitterId, go: boolean, key: unknown, opts: EmitHookOpts, o
   cbs.current = { onDone, onCover: opts.onCover };
   useEffect(() => {
     if (!go) return;
-    const el = opts.origin?.current ?? null;
-    const rect = rectOf(el);
-    const emitOpts = {
-      origin: el, seed: opts.seed, count: opts.count, reduced,
-      params: { ...(rect ? { rect } : {}), ...opts.params },
-    };
     let alive = true;
-    // swap point from the emitter's own coverage curve (closed form, same seed → same timing)
-    let coverAt: number | undefined;
-    if (cbs.current.onCover) {
-      const probe = probeEmitter(fx, id, emitOpts);
-      coverAt = probe?.coverAtMs ?? 0;
-    }
-    const h = fx.emit(id, emitOpts);
-    let covered = false;
-    const fireCover = () => { if (!covered && alive) { covered = true; cbs.current.onCover?.(); } };
-    let raf = 0;
-    if (coverAt !== undefined) {
-      if (coverAt <= 0) fireCover();
-      else {
-        const poll = () => { if (!alive) return; if (h.time >= coverAt!) fireCover(); else raf = requestAnimationFrame(poll); };
-        raf = requestAnimationFrame(poll);
+    let stop = () => undefined as void;
+    void loadFx().then(({ fx, probeEmitter, rectOf }) => {
+      if (!alive) return;
+      const el = opts.origin?.current ?? null;
+      const rect = rectOf(el);
+      const emitOpts = {
+        origin: el, seed: opts.seed, count: opts.count, reduced,
+        params: { ...(rect ? { rect } : {}), ...opts.params },
+      };
+      // swap point from the emitter's own coverage curve (closed form, same seed → same timing)
+      let coverAt: number | undefined;
+      if (cbs.current.onCover) {
+        const probe = probeEmitter(fx, id, emitOpts);
+        coverAt = probe?.coverAtMs ?? 0;
       }
-    }
-    void h.finished.then(() => { if (!alive) return; fireCover(); cbs.current.onDone?.(); });
-    return () => { alive = false; cancelAnimationFrame(raf); h.stop(); };
+      const h = fx.emit(id, emitOpts);
+      let covered = false;
+      const fireCover = () => { if (!covered && alive) { covered = true; cbs.current.onCover?.(); } };
+      let raf = 0;
+      if (coverAt !== undefined) {
+        if (coverAt <= 0) fireCover();
+        else {
+          const poll = () => { if (!alive) return; if (h.time >= coverAt!) fireCover(); else raf = requestAnimationFrame(poll); };
+          raf = requestAnimationFrame(poll);
+        }
+      }
+      void h.finished.then(() => { if (!alive) return; fireCover(); cbs.current.onDone?.(); });
+      stop = () => { cancelAnimationFrame(raf); h.stop(); };
+    });
+    return () => { alive = false; stop(); };
   }, [go, key, reduced]); // eslint-disable-line react-hooks/exhaustive-deps
 }
 

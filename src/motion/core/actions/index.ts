@@ -8,7 +8,7 @@
  */
 import type { ActionImplMap } from '../types';
 
-const mods = import.meta.glob<{ actions?: ActionImplMap }>(['./*.ts', '!./index.ts'], { eager: true });
+const mods = import.meta.glob<{ actions?: ActionImplMap }>(['./*.ts', '!./index.ts', '!./*.test.ts'], { eager: true });
 
 export const builtinActions: ActionImplMap = Object.keys(mods)
   .sort((a, b) => (a.endsWith('/base.ts') ? -1 : b.endsWith('/base.ts') ? 1 : a.localeCompare(b)))

@@ -1,6 +1,6 @@
 /** gift-schema public API (owner: scaffold). React-free, Supabase-free. */
 export * from './types';
-export { validateGift, migrate, LIMITS, type Result } from './validate';
+export { validateGift, migrate, LIMITS, safeHttpUrl, graphemeLength, type Result } from './validate';
 export { encodeGift, encodeGiftSync, decodeGift, loadGift, giftUrl, toBase64Url, fromBase64Url } from './codec';
 export { resolveMedia, placeholderPhoto } from './media';
 import fixtureJson from './fixtures/envelope-min.json';

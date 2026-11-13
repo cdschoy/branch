@@ -4,9 +4,9 @@
  * −3.6° / +1.3° / +4°; date in Be Vietnam Pro 600 tabular, caption in Mali. STUB renders the layout.
  */
 import './PhotoStrip.css';
-import tokens from '@tokens/design-tokens.json';
+import { proportion } from '../motion/core/tokens';
 
-export const STRIP_FAN: readonly number[] = tokens.proportion.photoStrip.fanDeg;
+export const STRIP_FAN: readonly number[] = proportion.photoStrip.fanDeg;
 
 export interface PhotoStripProps {
   /** Up to 4 image URLs (empty cells render the paper colour). */
@@ -21,7 +21,7 @@ export interface PhotoStripProps {
   className?: string;
 }
 export function PhotoStrip({ photos, date, caption, fan, width = 120, onOpen, className }: PhotoStripProps) {
-  const s = tokens.proportion.photoStrip;
+  const s = proportion.photoStrip;
   const k = width / s.exportPx[0]!;
   const Tag = onOpen ? 'button' : 'div';
   return (

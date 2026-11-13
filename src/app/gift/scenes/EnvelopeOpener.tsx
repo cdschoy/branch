@@ -53,17 +53,22 @@ export function EnvelopeOpener({ gift, voice, seed, state, send, reading, timeSc
       envelope, hintRing: ring, prompt: label, envelopeArt: art, bouquetSeed: seedEl,
       bloom: { el: bloomOrigin, run: () => { playSfx('bloom'); } },
       bloomEdges: { el: bloomOrigin, run: () => { setWallOn(true); } },
-      // C1.promptContinue mounts on run.finished (P08), never on its offset
-      promptContinue: () => undefined,
+      // C1.promptContinue starts at 4130, the moment every visual step has ended (P08: on `finished`
+      // of the visual run). TimedPrompt runs the step's own 200 ms fade, so the prompt is not delayed
+      // by the step's length.
+      promptContinue: () => { reveal(); },
       wall: () => { setWallOn(true); setDrift(true); },
     };
-    const r = play(C1a, refs, { seed, timeScale, data, slot: 'opener' });
-    run.current = r;
-    void r.finished.then(() => {
-      if (r.state === 'cancelled') return;
+    let revealed = false;
+    function reveal() {
+      if (revealed) return;
+      revealed = true;
       setWallOn(true); setDrift(true); setPrompt(true);
       send({ type: 'CHOREO_DONE' });
-    });
+    }
+    const r = play(C1a, refs, { seed, timeScale, data, slot: 'opener' });
+    run.current = r;
+    void r.finished.then(() => { if (r.state !== 'cancelled') reveal(); });
   }, [state, send, play, seed, timeScale]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const tap2 = useCallback(() => {
@@ -90,6 +95,17 @@ export function EnvelopeOpener({ gift, voice, seed, state, send, reading, timeSc
   };
 
   useEffect(() => () => run.current?.cancel(), []);
+
+  // Focus follows the scene: the envelope button is disabled after tap 1, so hand focus to the prompt.
+  const promptBtn = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
+    if (!prompt) return;
+    const id = requestAnimationFrame(() => {
+      const a = document.activeElement;
+      if (!a || a === document.body || root.current?.contains(a)) promptBtn.current?.focus({ preventScroll: true });
+    });
+    return () => cancelAnimationFrame(id);
+  }, [prompt]);
 
   const wallStyle = { '--wall-drift-s': `${(G.wall.tileVh / G.wall.vhPerSec)}s` } as CSSProperties;
   const showFallback = landing && (ladder === 'double' || ladder === 'retype');
@@ -136,7 +152,7 @@ export function EnvelopeOpener({ gift, voice, seed, state, send, reading, timeSc
 
       <div className="gift-prompt" data-testid="gift-prompt" data-shown={prompt || undefined}>
         <TimedPrompt show={prompt}>
-          <button type="button" className="gift-prompt__btn" onClick={tap2}>{t('gift.label.tapToReveal', {}, voice)}</button>
+          <button ref={promptBtn} type="button" className="gift-prompt__btn" onClick={tap2}>{t('gift.label.tapToReveal', {}, voice)}</button>
         </TimedPrompt>
       </div>
 

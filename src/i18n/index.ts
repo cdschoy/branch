@@ -19,7 +19,8 @@ export type Vars = Readonly<Record<string, string | number>>;
 
 /** Who speaks to whom in sender-voice strings. Either a pronoun set or explicit words (GiftContentV1.names). */
 export interface Voice {
-  /** Pronoun set from vi.json → pronouns (e.g. 'anh-em'). Ignored when `self`/`you` are given. */
+  /** Pronoun set from vi.json → pronouns (e.g. 'anh-em'). With `self`/`you` it still picks {we}/{We} and the
+   *  tone override; when absent it is inferred from `self`/`you` (unknown words → 'none'). */
   readonly pronouns?: PronounSetId;
   /** Explicit words, e.g. from a gift: { self: 'anh', you: 'em' }. Capitalised forms are derived. */
   readonly self?: string;
@@ -47,14 +48,30 @@ const capFirst = (s: string): string => {
 };
 
 /** Resolve the pronoun placeholder values for a voice. */
+/** A stored pronoun id (from a gift link) → a known set id, or undefined. */
+export const pronounSetOf = (id: unknown): PronounSetId | undefined =>
+  typeof id === 'string' && Object.prototype.hasOwnProperty.call(strings.pronouns, id) ? (id as PronounSetId) : undefined;
+
+/** Which pronoun set a voice speaks in: explicit id, else matched from self/you, else 'anh-em' (no words) / 'none'. */
+function setIdOf(voice: Voice): PronounSetId {
+  if (voice.pronouns) return voice.pronouns;
+  if (!voice.self && !voice.you) return 'anh-em';
+  const self = nfc(voice.self ?? '').trim(), you = nfc(voice.you ?? '').trim();
+  for (const [id, p] of Object.entries(strings.pronouns) as [PronounSetId, (typeof strings.pronouns)[PronounSetId]][]) {
+    if (id !== 'none' && p.self === self && p.you === you) return id;
+  }
+  return 'none';
+}
+
 export function voiceWords(voice: Voice = {}): Record<string, string> {
-  const set = strings.pronouns[voice.pronouns ?? 'anh-em'];
+  const setId = setIdOf(voice);
+  const set = strings.pronouns[setId];
   const toneId: ToneId = voice.tone === 'nhe' ? 'north' : voice.tone === 'nha' ? 'south' : (voice.tone ?? 'south');
   const tone = strings.tone[toneId];
   const name = voice.recipientName ? nfc(voice.recipientName) : '';
   let we = voice.we ?? set.we;
   let We = voice.we ? capFirst(voice.we) : set.We;
-  const ov = (tone.weOverride as Record<string, readonly [string, string] | undefined>)[voice.pronouns ?? ''];
+  const ov = (tone.weOverride as Record<string, readonly [string, string] | undefined>)[setId];
   if (!voice.we && ov) { we = ov[0]; We = ov[1]; }
   const self = voice.self ? nfc(voice.self) : set.self;
   const you = voice.you ? nfc(voice.you) : set.you.replace('{recipientName}', name);

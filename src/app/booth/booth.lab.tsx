@@ -26,7 +26,7 @@ function StripDemo({ theme }: { theme: FrameTheme }) {
       const c = composeStripCanvas([0, 1, 2, 3].map((i) => sampleShot(i, theme)), {
         frameColor: resolvePalette(theme).frame, palette: resolvePalette(theme), motif: theme.motif, filter: 'natural', seed: 7,
         footerText: t('booth.caption.default'),
-        date: t('booth.footer.date', { solar: t('format.date', { d: String(d).padStart(2, '0'), m: String(m).padStart(2, '0'), y }), lunar: t('format.lunarDate', { d: lunar.day, m: lunar.month }) }),
+        date: t('booth.footer.date', { solar: t('format.date', { d: String(d).padStart(2, '0'), m: String(m).padStart(2, '0'), y }), lunar: t(lunar.leap ? 'format.lunarDateLeap' : 'format.lunarDate', { d: lunar.day, m: lunar.month }) }),
       });
       setUrl(c.toDataURL('image/png'));
     });

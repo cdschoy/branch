@@ -3,7 +3,7 @@
  * (today: decode the URL-hash payload; later: /api/gift/[slug]/open, see api/README.md), gates on the
  * critical fonts (§3.4 rule 8), then hands it to the GiftPlayer.
  */
-import { useEffect, useState } from 'react';
+import { Component, useEffect, useState, type ReactNode } from 'react';
 import { t } from '../../i18n';
 import { loadGift, type GiftContentV1 } from '../../gift-schema';
 import { fontsReady } from '../fonts';
@@ -12,6 +12,22 @@ import { GiftPlayer } from './GiftPlayer';
 import './player.css';
 
 const CRITICAL_FACES = ['400 18px Mali', '700 40px "Dancing Script"', '400 28px "Playwrite VN"', '500 16px "Be Vietnam Pro"'];
+
+function GiftError() {
+  return (
+    <main className="app-scene gift-player gift-player--msg" data-theme="garden-envelope" data-testid="gift-error">
+      <p role="alert" className="gift-msg">{t('gift.error.notFound')}</p>
+      <a className="gift-msg__link" href={hrefFor({ name: 'landing' })}>{t('app.home')}</a>
+    </main>
+  );
+}
+
+/** Last line of defence: anything the validator missed ends on the friendly error screen, never a white page. */
+class GiftBoundary extends Component<{ children: ReactNode }, { failed: boolean }> {
+  override state = { failed: false };
+  static getDerivedStateFromError(): { failed: boolean } { return { failed: true }; }
+  override render() { return this.state.failed ? <GiftError /> : this.props.children; }
+}
 
 export default function PlayerScreen({ param }: { param: string }) {
   const [state, setState] = useState<{ gift?: GiftContentV1; error?: string }>({});
@@ -23,14 +39,7 @@ export default function PlayerScreen({ param }: { param: string }) {
     return () => { live = false; };
   }, [param]);
 
-  if (state.error) {
-    return (
-      <main className="app-scene gift-player gift-player--msg" data-theme="garden-envelope" data-testid="gift-error">
-        <p role="alert" className="gift-msg">{t('gift.error.notFound')}</p>
-        <a className="gift-msg__link" href={hrefFor({ name: 'landing' })}>{t('app.home')}</a>
-      </main>
-    );
-  }
+  if (state.error) return <GiftError />;
   if (!state.gift) {
     return (
       <main className="app-scene gift-player gift-player--msg" data-theme="garden-envelope" aria-busy="true">
@@ -38,5 +47,5 @@ export default function PlayerScreen({ param }: { param: string }) {
       </main>
     );
   }
-  return <GiftPlayer gift={state.gift} />;
+  return <GiftBoundary><GiftPlayer gift={state.gift} /></GiftBoundary>;
 }

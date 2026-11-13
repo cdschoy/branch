@@ -15,7 +15,8 @@ export default defineConfig({
       '@strings/': r('./i18n/'),
     },
   },
-  build: { target: 'es2022', sourcemap: true },
+  // No production source maps (they would ship every source file); `SOURCEMAP=1 npm run build` for debugging.
+  build: { target: 'es2022', sourcemap: !!process.env.SOURCEMAP },
   server: { host: true },
   preview: { host: true },
 });

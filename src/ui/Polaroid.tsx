@@ -3,10 +3,10 @@
  * seeded tilt from proportion.polaroid.tiltDeg (never 0° outside the lightbox), caption in ink 700.
  */
 import './Polaroid.css';
-import tokens from '@tokens/design-tokens.json';
+import { proportion } from '../motion/core/tokens';
 import { rand01, pick } from '../fx/rng';
 
-export const POLAROID_TILTS: readonly number[] = tokens.proportion.polaroid.tiltDeg;
+export const POLAROID_TILTS: readonly number[] = proportion.polaroid.tiltDeg;
 /** Deterministic tilt for photo `index` of a gift seeded by `seed`. */
 export const polaroidTilt = (seed: number, index: number): number => pick(rand01(seed, index, 7), POLAROID_TILTS);
 

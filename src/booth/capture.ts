@@ -7,12 +7,12 @@
  * Starter: runs on the main thread (seam: move composeStripCanvas into an OffscreenCanvas worker;
  * text must still be rasterised on the main thread after document.fonts.load()).
  */
-import tokens from '@tokens/design-tokens.json';
+import { proportion } from '../motion/core/tokens';
 import { graphemes, nfc } from '../i18n';
 import { applyLut, bake, filterById, type FilterId } from './filters';
 import type { Motif, Palette } from './frames';
 
-export const STRIP = tokens.proportion.photoStrip;
+export const STRIP = proportion.photoStrip;
 /** Longest side of a stored shot (§6.6 "shots downscaled to ≤1080 px"). */
 export const SHOT_MAX_PX = 1080;
 

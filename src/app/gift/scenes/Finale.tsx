@@ -79,9 +79,14 @@ export interface FinaleTargets {
   readonly endDecor: RefObject<HTMLDivElement | null>;
 }
 
-/** The C7 overlay: mounted on CONTINUE, plays C7 once, unmounts itself at C7.overlayUnmount. */
-export function FinaleOverlay({ seed, timeScale, targets, onSwap, onDone }: {
-  seed: number; timeScale: number; targets: FinaleTargets; onSwap: () => void; onDone: () => void;
+/**
+ * The C7 overlay. Pre-mounted (idle, invisible, click-through) while the reader is on the letter so
+ * the veil art is rendered and decoded before the tap (§4.6: no long frame inside a spectacle); plays
+ * C7 once when `go` turns true. `onCleared` fires at C7.overlayUnmount (C13's t0); `onDone` when the
+ * whole run (incl. the decor pendulum) has finished.
+ */
+export function FinaleOverlay({ go, seed, timeScale, targets, onSwap, onCleared, onDone }: {
+  go: boolean; seed: number; timeScale: number; targets: FinaleTargets; onSwap: () => void; onCleared: () => void; onDone: () => void;
 }) {
   const play = usePlay();
   const root = useRef<HTMLDivElement>(null);
@@ -90,28 +95,33 @@ export function FinaleOverlay({ seed, timeScale, targets, onSwap, onDone }: {
   const flash = useRef<HTMLDivElement>(null);
   const centre = useRef<HTMLDivElement>(null);
   const run = useRef<Run | null>(null);
-  const cbs = useRef({ onSwap, onDone });
-  cbs.current = { onSwap, onDone };
+  const cbs = useRef({ onSwap, onCleared, onDone });
+  cbs.current = { onSwap, onCleared, onDone };
 
   useEffect(() => {
+    if (!go || run.current) return;
+    let cleared = false;
+    const clear = () => { if (!cleared) { cleared = true; cbs.current.onCleared(); } };
     const refs: TargetMap = {
       drawer: targets.pull, rail: targets.rail, tooltips: () => undefined,
       cta: targets.cta, veil,
       heroFlower: heroBinding(hero, targets.cta),
       impactFlash: flash,
-      rays: centre, ring: centre, burst: centre, wall: centre, field: centre,
+      // 'rays+ring': the rays emitter draws the shockwave ring too, so the ring part is a no-op.
+      rays: centre, ring: () => undefined, burst: centre, wall: centre, field: centre,
       scene: () => { cbs.current.onSwap(); },
-      overlay: root,
+      overlay: { el: root, run: () => { clear(); return undefined; } },
       hangingDecor: targets.endDecor,
     };
     const r = play(C7, refs, { seed, timeScale, slot: 'finale' });
     run.current = r;
-    void r.finished.then(() => { if (r.state !== 'cancelled') { cbs.current.onSwap(); cbs.current.onDone(); } });
-    return () => r.cancel();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    void r.finished.then(() => { if (r.state !== 'cancelled') { cbs.current.onSwap(); clear(); cbs.current.onDone(); } });
+  }, [go]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => () => run.current?.cancel(), []);
 
   return (
-    <div ref={root} className="gift-finale" data-testid="gift-finale" onPointerDown={() => run.current?.setTimeScale(timeScale * G.fastForward)}>
+    <div ref={root} className="gift-finale" data-testid="gift-finale" data-idle={go ? undefined : ''} aria-hidden={go ? undefined : true}
+      onPointerDown={() => run.current?.setTimeScale(timeScale * G.fastForward)}>
       <div ref={veil} className="gift-finale__veil" style={{ opacity: 0 }} aria-hidden="true"><PaintedWall seed={seed + 1} /></div>
       <div ref={flash} className="gift-finale__flash" style={{ opacity: 0 }} aria-hidden="true" />
       <div ref={centre} className="gift-finale__centre" aria-hidden="true" />
@@ -121,8 +131,12 @@ export function FinaleOverlay({ seed, timeScale, targets, onSwap, onDone }: {
 }
 
 /** C13 end card: pre-mounted under the C7 cover (`ready` false = invisible + inert). */
-export function EndCard({ ready, voice, senderName, seed, timeScale, preview, decorRef, onReplaySwap }: {
-  ready: boolean; voice: Voice; senderName: string; seed: number; timeScale: number; preview: boolean;
+export function EndCard({ ready, entrance, voice, senderName, seed, timeScale, preview, decorRef, onReplaySwap }: {
+  /** C7.swap reached: visible and interactive. */
+  ready: boolean;
+  /** C7.overlayUnmount reached (C13's t0): play the actions entrance and take focus. */
+  entrance: boolean;
+  voice: Voice; senderName: string; seed: number; timeScale: number; preview: boolean;
   decorRef: RefObject<HTMLDivElement | null>; onReplaySwap: () => void;
 }) {
   const play = usePlay();
@@ -131,11 +145,13 @@ export function EndCard({ ready, voice, senderName, seed, timeScale, preview, de
   const card = useRef<HTMLDivElement>(null);
   const replaying = useRef(false);
 
+  const title = useRef<HTMLHeadingElement>(null);
   useEffect(() => {
-    if (!ready) return;
+    if (!ready || !entrance) return;
+    title.current?.focus({ preventScroll: true });
     const r = play(C13entrance, { endCard: card, endActions: actions }, { seed, timeScale, slot: 'c13' });
     void r.finished.then(() => { if (actions.current) actions.current.style.opacity = '1'; });
-  }, [ready]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [ready, entrance]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const replay = () => {
     if (replaying.current) return;
@@ -154,7 +170,7 @@ export function EndCard({ ready, voice, senderName, seed, timeScale, preview, de
       aria-hidden={!ready || undefined} inert={!ready || undefined}>
       <div ref={decorRef} className="gift-decor gift-decor--end" aria-hidden="true"><HangingBunting /></div>
       <div className="gift-end__art" aria-hidden="true"><Bouquet size={150} /></div>
-      <h1 className="gift-end__title">{t('gift.finale.thanks', {}, voice)}</h1>
+      <h1 ref={title} tabIndex={-1} className="gift-end__title">{t('gift.finale.thanks', {}, voice)}</h1>
       <p className="gift-end__from">{t('gift.end.from', { senderName })}</p>
       <div ref={actions} className="gift-end__actions" style={{ opacity: 0 }}>
         <Pill variant="action" onClick={replay}>{t('gift.end.replay')}</Pill>

@@ -6,6 +6,8 @@
  * literal in a component is a lint failure (FRAMEWORK §3.1, §7.2).
  */
 export * from '@tokens/motion';
+/** Design-token slices (design-tokens.json, generated). Read them from here, never import the JSON directly. */
+export { proportion, themes } from '@tokens/design-tokens.json';
 import { duration, easing, spring, type DurationName, type EasingName, type SpringName } from '@tokens/motion';
 
 /** Mutable cubic-bezier array for Motion (`ease: bez('outQuad')`). */

@@ -149,7 +149,9 @@ export const actions: ActionImplMap = {
     if (ctx.reduced) return reducedOut(el);
     style(el).transformOrigin = '50% 100%';
     const [a = 0, b = 180] = p.rotateX ?? [];
-    return plan(el, { rotateX: [a, b], transformPerspective: P.lidFlip.perspectivePx } as DOMKeyframesDefinition, tw(ms, 'inOutCubic'));
+    // perspective is constant (never interpolated from 0: a late start would sample perspective(-ε px))
+    const pp = P.lidFlip.perspectivePx;
+    return plan(el, { rotateX: [a, b], transformPerspective: [pp, pp] } as DOMKeyframesDefinition, tw(ms, 'inOutCubic'));
   },
   /** P35: FLIP from snapshotLayout(el), 280 ms inOutCubic. Without a snapshot it is an instant change. */
   layoutMove: (el, ctx) => {
@@ -292,11 +294,11 @@ export const actions: ActionImplMap = {
     const [y0, y1] = c.yVh;
     const plans: DomAnimationPlan[] = [
       plan(el, { y: [`${y0}vh`, `${y1}vh`] }, tw(P.curtainFallMs, 'curtainFall')),
-      plan(el, { opacity: [1, 0] }, tw(c.fadeMs, 'inQuad', c.fadeFromMs)),
-      plan(el, { clipPath: ['inset(0% 0 0 0)', 'inset(100% 0 0 0)'] }, tw(c.maskMs, 'linear', c.maskFromMs)),
+      plan(el, { opacity: [1, 0] }, tw(c.fadeMs, c.fadeEase, c.fadeFromMs)),
+      plan(el, { clipPath: ['inset(0% 0 0 0)', 'inset(100% 0 0 0)'] }, tw(c.maskMs, c.maskEase, c.maskFromMs)),
     ];
     const wash = el.querySelector<HTMLElement>('[data-wash]');
-    if (wash) plans.push(plan(wash, { opacity: [0, 1] }, tw(c.washMs, 'linear', c.washFromMs)));
+    if (wash) plans.push(plan(wash, { opacity: [0, 1] }, tw(c.washMs, c.washEase, c.washFromMs)));
     return plans;
   },
   /** P23: ≤1-frame rise to .85, linear decay (camera) / .6 → .3 → .07 → 0 outQuad (impact). Reduced: .4 over 200 ms. */

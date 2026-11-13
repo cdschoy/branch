@@ -5,6 +5,7 @@
  *
  * TODO(lead): move these rows into motion-tokens.json (a `gift` block) so build.py checks them.
  */
+import { LIMITS } from '../../gift-schema';
 import { choreography, duration, ambient, hintLadder, stagger, type Spec, type Step } from '../../motion/core';
 
 /** Find a step of a generated spec by name. */
@@ -55,14 +56,14 @@ export const G = {
 
 /** Creator media budget (§5.2 uploads, trimmed for the local URL-hash starter). */
 export const MEDIA = {
-  maxPhotos: 6,
+  maxPhotos: LIMITS.photos,
   longEdgePx: 640,
   /** WebP q.72, JPEG fallback (EXIF dropped by construction: the canvas re-encode). */
   quality: 0.72,
   /** Total data-URL characters of all photos: warn above, refuse new photos above max. */
   warnChars: 300_000,
   maxChars: 1_400_000,
-  captionGraphemes: 40,
-  nameGraphemes: 24,
-  bodyGraphemes: 1200,
+  captionGraphemes: LIMITS.captionGraphemes,
+  nameGraphemes: LIMITS.nameGraphemes,
+  bodyGraphemes: LIMITS.bodyGraphemes,
 } as const;

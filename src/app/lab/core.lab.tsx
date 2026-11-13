@@ -28,7 +28,7 @@ function DirectorDemo({ timeScale }: { timeScale: number }) {
           <LetterCard eyebrow={t('gift.letter.eyebrow', {}, { you: 'em' })} greeting={page.greeting} body={page.body} signature={page.signature} />
         </div>
       </div>
-      <ol data-testid="director-log" style={{ position: 'absolute', left: 8, bottom: 4, margin: 0, padding: 0, listStyle: 'none', fontSize: 11, lineHeight: 1.4, color: 'var(--c-cream-50)' }}>
+      <ol data-testid="director-log" style={{ position: 'absolute', left: 8, bottom: 4, zIndex: 1, margin: 0, padding: '2px 6px', borderRadius: 'var(--radius-sm)', background: 'var(--c-overlay-scrim-modal)', listStyle: 'none', fontSize: 11, lineHeight: 1.4, color: 'var(--c-cream-50)' }}>
         {log.slice(-4).map((x, i) => <li key={i}>{x}</li>)}
       </ol>
     </div>
@@ -51,8 +51,12 @@ function GraphemeDemo() {
   const name = 'Nguyễn Thị Ánh Dương';
   return (
     <div style={{ display: 'grid', gap: 8, justifyItems: 'center', padding: 8 }}>
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 2, fontFamily: 'var(--font-hand-body)', fontSize: 22, lineHeight: 1.6 }}>
-        {graphemes(name.normalize('NFD')).map((g, i) => <span key={i} style={{ outline: '1px dashed var(--c-blush-ring)', padding: '0 2px' }}>{g}</span>)}
+      <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '2px 10px', fontFamily: 'var(--font-hand-body)', fontSize: 20, lineHeight: 1.6 }}>
+        {name.normalize('NFD').split(' ').map((word, w) => (
+          <span key={w} style={{ display: 'inline-flex', gap: 2, whiteSpace: 'nowrap' }}>
+            {graphemes(word).map((g, i) => <span key={i} style={{ outline: '1px dashed var(--c-blush-ring)', padding: '0 2px' }}>{g}</span>)}
+          </span>
+        ))}
       </div>
       <p style={{ margin: 0, fontFamily: 'var(--font-hand-body)', lineHeight: 1.6 }}>{t('gift.landing.from', {}, { pronouns: 'anh-em', tone: 'north' })}</p>
       <p style={{ margin: 0, fontFamily: 'var(--font-script-signature)', fontSize: 22, lineHeight: 1.8 }}>Thương em nhiều, Minh</p>

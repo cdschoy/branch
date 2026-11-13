@@ -524,6 +524,7 @@ export const primitive = {
     "fadeEase": "inQuad",
     "maskFromMs": 1100,
     "maskMs": 430,
+    "maskEase": "inQuad",
     "unmountMs": 1530,
     "note": "canvas variant: drops the bloom's cover layer. washPeak (how far the heads flatten to the wall-mean colour) is a starter-kit design choice",
     "evidence": "v5 A-e12-14 f189-235"
@@ -1063,10 +1064,13 @@ export const choreography = {
           ],
           "washFromMs": 33,
           "washMs": 700,
+          "washEase": "linear",
           "fadeFromMs": 900,
           "fadeMs": 630,
+          "fadeEase": "inQuad",
           "maskFromMs": 1100,
-          "maskMs": 430
+          "maskMs": 430,
+          "maskEase": "inQuad"
         },
         "ease": "curtainFall",
         "evidence": "v5 A-e12-14 f189-235"

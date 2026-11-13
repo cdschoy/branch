@@ -11,6 +11,9 @@ import { ease, keyframeAt, noise, springAt, tossPoint } from '../../core/actions
 import { useReducedMotion, useTicker } from '../hooks';
 import type { BaseProps, OneShotProps } from './types';
 import { P, tw, useDoneOnce, useLatest, cx } from './_shared';
+import { stepOf } from '../../core/actions/params';
+
+const WHIP_AT = stepOf('C2b', 'C2.whipOff').at;
 
 const key = (playKey: unknown, play: boolean) => `${String(playKey)}:${play ? 1 : 0}`;
 
@@ -19,12 +22,14 @@ export function WhipOff({ play = true, playKey, onDone, children, className, sty
   const reduced = useReducedMotion();
   const done = useDoneOnce(onDone, play, playKey);
   const w = P.whipOff;
-  const delay = w.knotMs + w.holdMs;
+  // Same as the Director action in C2b: the ribbon holds still at its 11° rest through the knot +
+  // hold, then x and rotate (11 → 33°) whip together over 133 ms inQuad from C2.whipOff's offset.
+  const delay = WHIP_AT;
   return (
     <motion.div key={key(playKey, play)} className={className} style={style} data-primitive="whipOff"
-      initial={reduced ? { opacity: 1 } : { x: '0vw', rotate: 0 }}
-      animate={!play ? {} : reduced ? { opacity: 0 } : { x: `${w.xVw}vw`, rotate: [0, w.rotateDeg[0], w.rotateDeg[1]] }}
-      transition={reduced ? tw(P.reducedMs, 'outQuad') : { x: tw(w.ms, 'inQuad', delay), rotate: { ...tw(w.ms + delay, 'inQuad'), times: [0, delay / (w.ms + delay), 1] } }}
+      initial={reduced ? { opacity: 1 } : { x: '0vw', rotate: w.rotateDeg[0] }}
+      animate={!play ? {} : reduced ? { opacity: 0 } : { x: `${w.xVw}vw`, rotate: w.rotateDeg[1] }}
+      transition={reduced ? tw(P.reducedMs, 'outQuad') : tw(w.ms, 'inQuad', delay)}
       onAnimationComplete={() => play && done()}
     >{children}</motion.div>
   );
@@ -50,14 +55,14 @@ export function CurtainDrop({ play = true, playKey, onDone, children, className,
       animate={!play ? {} : reduced ? { opacity: 0 } : { y: `${c.yVh[1]}vh`, opacity: 0, clipPath: 'inset(100% 0% 0% 0%)' }}
       transition={reduced ? tw(duration.modal, 'outQuad') : {
         y: tw(P.curtainFallMs, 'curtainFall'),
-        opacity: tw(c.fadeMs, 'inQuad', c.fadeFromMs),
-        clipPath: tw(c.maskMs, 'linear', c.maskFromMs),
+        opacity: tw(c.fadeMs, c.fadeEase, c.fadeFromMs),
+        clipPath: tw(c.maskMs, c.maskEase, c.maskFromMs),
       }}
     >
       {children}
       {!reduced ? (
         <motion.span className="prim-curtain__wash" aria-hidden="true"
-          initial={{ opacity: 0 }} animate={play ? { opacity: 1 } : {}} transition={tw(c.washMs, 'linear', c.washFromMs)} />
+          initial={{ opacity: 0 }} animate={play ? { opacity: 1 } : {}} transition={tw(c.washMs, c.washEase, c.washFromMs)} />
       ) : null}
     </motion.div>
   );

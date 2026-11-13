@@ -15,12 +15,14 @@
     "test": "vitest run",
     "e2e": "node e2e/run.mjs",
     "tokens": "python3 -I design-tokens/build.py",
-    "strings": "python3 -I i18n/tools/build_vi.py"
+    "strings": "python3 -I i18n/tools/build_vi.py",
+    "lint": "node scripts/check-boundaries.mjs"
   },
   "dependencies": {
     "@fontsource/be-vietnam-pro": "5.3.0",
     "@fontsource/dancing-script": "5.3.0",
     "@fontsource/mali": "5.3.0",
+    "@fontsource/pangolin": "5.3.0",
     "@fontsource/paytone-one": "5.3.0",
     "@fontsource/playwrite-vn": "5.3.0",
     "motion": "14.13.0",

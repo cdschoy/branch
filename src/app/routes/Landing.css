@@ -13,7 +13,8 @@
 .landing-card-title { font-family: var(--font-ui-sans); font-weight: 600; font-size: 20px; line-height: 1.5; }
 .landing-card-hint { font-family: var(--font-hand-body); font-size: 15px; line-height: 1.6; color: var(--t-ink-muted); text-align: center; }
 .landing-links { margin: 0; font-family: var(--font-ui-sans); font-size: 14px; line-height: 1.5; }
-.landing-links a { color: var(--t-accent); text-underline-offset: .2em; }
+.landing-links { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; }
+.landing-links a { color: var(--t-accent); text-underline-offset: .2em; display: inline-flex; align-items: center; min-height: 44px; padding-inline: 8px; }
 .landing-foot { margin-top: auto; }
 /* procedural art: theme / core colour variables only */
 .la-env { fill: var(--t-object); } .la-env-flap { fill: var(--c-kraft-500); } .la-seal { fill: var(--t-seal, var(--c-berry-600)); }

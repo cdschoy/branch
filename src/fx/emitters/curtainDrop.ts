@@ -2,7 +2,7 @@
  * Curtain drop (P12) on the canvas (FRAMEWORK §4.2, v5 A-e12-14; owner: fx). The hand-over after a
  * bloom: the cover layer falls to 105 vh over 1400 ms on `curtainFall`, flattens toward the wall-mean
  * colour from +33 ms over 700 ms, fades from +900 ms over 630 ms `inQuad`, and is masked top → bottom
- * from +1100 ms over 430 ms; gone at 1530 ms.
+ * from +1100 ms over 430 ms `inQuad`; gone at 1530 ms.
  *
  * It starts from the bloom's END state (same seed → same layout), so bloom → drop has no pop. The
  * origin of the last bloom with this seed is reused, since the drop's own target is usually the wall.
@@ -33,6 +33,7 @@ export const emitter: EmitterDef<DropParams> = {
     const yMs = D.yMs * k;
     const fall = ease(p.ease ?? D.yEase);
     const fadeE = ease(D.fadeEase);
+    const maskE = ease(D.maskEase);
     const washFrom = (p.washFromMs ?? D.washFromMs) * k, washMs = (p.washMs ?? D.washMs) * k;
     const fadeFrom = (p.fadeFromMs ?? D.fadeFromMs) * k, fadeMs = (p.fadeMs ?? D.fadeMs) * k;
     const maskFrom = (p.maskFromMs ?? D.maskFromMs) * k, maskMs = (p.maskMs ?? D.maskMs) * k;
@@ -40,7 +41,7 @@ export const emitter: EmitterDef<DropParams> = {
     const dy = (t: number) => yTo * fall(clamp01(t / yMs));
     const alpha = (t: number) => 1 - fadeE(clamp01((t - fadeFrom) / fadeMs));
     const washA = (t: number) => D.washPeak * clamp01((t - washFrom) / washMs);
-    const maskTop = (t: number) => view.h * clamp01((t - maskFrom) / maskMs);
+    const maskTop = (t: number) => view.h * maskE(clamp01((t - maskFrom) / maskMs));
     const pad = L.pitch;
     const coverage = (t: number) => clamp01(alpha(t) * (1 - Math.max(maskTop(t), dy(t)) / view.h));
     return {

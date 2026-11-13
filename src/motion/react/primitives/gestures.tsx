@@ -58,6 +58,8 @@ export interface BiteTapProps extends BaseProps {
   remaining: number;
   onBite: () => void;
   ariaLabel: string;
+  /** Show the built-in caret note on the first bite (default true). Off when the scene shows its own note. */
+  note?: boolean;
 }
 const CRUMBS = [[-1, -0.6], [0.8, -0.9], [0.2, -1.2]] as const;
 /**
@@ -65,7 +67,7 @@ const CRUMBS = [[-1, -0.6], [0.8, -0.9], [0.2, -1.2]] as const;
  * crumb sparkles over 70-170 ms, container squash; the first bite pops a caret note (scale .86 → 1)
  * with gift.treats.left. Taps inside the 200 ms debounce are ignored.
  */
-export function BiteTap({ bites, remaining, onBite, ariaLabel, children, className, style }: BiteTapProps) {
+export function BiteTap({ bites, remaining, onBite, ariaLabel, note = true, children, className, style }: BiteTapProps) {
   const last = useRef(-Infinity);
   const [burst, setBurst] = useState(0);
   const [charm, setCharm] = useState(false);
@@ -95,7 +97,7 @@ export function BiteTap({ bites, remaining, onBite, ariaLabel, children, classNa
         </span>
       ) : null}
       <AnimatePresence>
-        {bites === 1 ? (
+        {note && bites === 1 ? (
           <motion.span key="note" className="prim-bite__note" role="status"
             initial={reduced ? { opacity: 0 } : { opacity: 0, scale: b.noteFromScale }}
             animate={{ opacity: 1, scale: 1 }}

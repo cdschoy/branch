@@ -11,7 +11,7 @@
  */
 import './BoothScreen.css';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { AnimatePresence, motion, useAnimate } from 'motion/react';
+import { AnimatePresence, motion } from 'motion/react';
 import { t, hasKey, type StringKey } from '../../i18n';
 import {
   CameraError, canvasToBlob, captureSpec, composeStripCanvas, detectInApp, detectPlatform, FILTERS, FRAMES, frameById,
@@ -25,17 +25,24 @@ import { CameraFlash, DrawerSlide, SlotPrint, Toss, TokenDrop, usePlay, useReduc
 import { CountdownStamp, PhotoStrip, Pill, STRIP_FAN } from '../../ui';
 import { hrefFor } from '../router';
 import { CameraHelp, CanvasHost, ChipRow, CurtainArt, FilePickers, InAppSheet, LookFilterDefs } from './parts';
-import { useCamera } from './useCamera';
+import { CameraSuperseded, useCamera } from './useCamera';
 
 const TOTAL = 4;
+/** C12.toss starts from the mini strip the slot fed out (P37: scale .36); the feed renders at the same scale. */
+const C12_TOSS = choreography.C12print.steps.find((x) => x.action === 'toss');
+const FROM_SCALE = Number(C12_TOSS?.params?.fromScale ?? 1);
+const TOSS_ARC_MS = Number(C12_TOSS?.params?.arcMs ?? 600);
 /** Tween transition from tokens (ms or a duration name + an easing name). */
 const tw = (ms: number | DurationName, e: EasingName = 'outQuad', delayMs = 0) => ({ duration: sec(ms), ease: bez(e), delay: sec(delayMs) });
 const pad2 = (n: number) => String(n).padStart(2, '0');
 
 function stripDate(): string {
   const { d, m, y, lunar } = vnDateParts();
-  return t('booth.footer.date', { solar: t('format.date', { d: pad2(d), m: pad2(m), y }), lunar: t('format.lunarDate', { d: lunar.day, m: lunar.month }) });
+  return t('booth.footer.date', { solar: t('format.date', { d: pad2(d), m: pad2(m), y }), lunar: t(lunar.leap ? 'format.lunarDateLeap' : 'format.lunarDate', { d: lunar.day, m: lunar.month }) });
 }
+
+/** Diegetic pills that carry the decorative ✦ (rendered aria-hidden by Pill, never inside the copy). */
+const SPARKLE_PILLS: ReadonlySet<StringKey> = new Set<StringKey>(['booth.pill.coin', 'booth.pill.tapStrip']);
 
 type PrintPhase = 'none' | 'feed' | 'toss';
 
@@ -93,14 +100,15 @@ export default function BoothScreen() {
   const controlsRef = useRef<HTMLDivElement>(null);
   const runRef = useRef<Run | null>(null);
   const specRef = useRef<Spec | null>(null);
-  const [stageScope, animateStage] = useAnimate<HTMLDivElement>();
+  const stageScope = useRef<HTMLDivElement>(null);
 
   const shake = useCallback(() => {
     if (reduced || !stageScope.current) return;
+    // P23: ≤2.5 px in 2-3 discrete steps(1) jumps (held, not slid) over shakeMs.
     const px = flash.camera.shakePx, n = flash.camera.shakeSteps;
     const xs = [0, ...Array.from({ length: n }, (_, i) => (i % 2 ? -px : px) * (1 - i / n)), 0];
-    void animateStage(stageScope.current, { x: xs }, tw(flash.camera.shakeMs, 'linear'));
-  }, [reduced, animateStage, stageScope]);
+    stageScope.current.animate(xs.map((x) => ({ translate: `${x}px 0`, easing: 'steps(1, end)' })), { duration: flash.camera.shakeMs });
+  }, [reduced]);
 
   const captureRefs = useCallback((): TargetMap => ({
     pill: (ctx: StepContext) => { const k = ctx.step.params?.key; if (typeof k === 'string' && hasKey(k)) setPillKey(k); },
@@ -138,7 +146,7 @@ export default function BoothScreen() {
   const startCamera = useCallback(async () => {
     send({ type: 'START' });
     try { await open(); setErrorKind(null); send({ type: 'GRANTED' }); }
-    catch (e) { const k = e instanceof CameraError ? e.kind : 'unknown'; setErrorKind(k); send({ type: 'DENIED', reason: k }); }
+    catch (e) { if (e instanceof CameraSuperseded) return; const k = e instanceof CameraError ? e.kind : 'unknown'; setErrorKind(k); send({ type: 'DENIED', reason: k }); }
   }, [open, send]);
 
   const runCapture = useCallback((spec: Spec) => {
@@ -186,12 +194,6 @@ export default function BoothScreen() {
     send({ type: 'RETAKE', index: i });
     runCapture(retakeSpec(i + 1, cadence));
   }, [session, send, runCapture, cadence]);
-  const retakeAll = useCallback(() => {
-    setSelected(null); setPrintPhase('none'); setSheetOpen(false); setCaptionShown(false); setStripUrl(null); setStripCanvas(null);
-    clearShots(); setSetupKey((k) => k + 1);
-    if (session) send({ type: 'RETAKE' });
-    else { send({ type: 'RESET' }); send({ type: 'PICK' }); }
-  }, [session, send, clearShots]);
 
   // ---- print (C12print) → decorate ----
   const [caption, setCaption] = useState(() => t('booth.caption.default'));
@@ -199,12 +201,16 @@ export default function BoothScreen() {
   const [stripCanvas, setStripCanvas] = useState<HTMLCanvasElement | null>(null);
   const [stripUrl, setStripUrl] = useState<string | null>(null);
   const stripBlob = useRef<Blob | null>(null);
+  const stripUrlRef = useRef<string | null>(null);
+  const alive = useRef(true);
+  useEffect(() => { alive.current = true; return () => { alive.current = false; }; }, []);
   const [printPhase, setPrintPhase] = useState<PrintPhase>('none');
   const [feedMs, setFeedMs] = useState<number | undefined>(undefined);
-  const [tossFrom, setTossFrom] = useState<{ x: number; y: number; scale: number }>({ x: 0, y: 0, scale: 1 });
+  const [tossFrom, setTossFrom] = useState<{ x: number; y: number; scale: number }>({ x: 0, y: 0, scale: FROM_SCALE });
   const [captionShown, setCaptionShown] = useState(false);
   const [sheetOpen, setSheetOpen] = useState(false);
   const slotRef = useRef<HTMLDivElement>(null);
+  const feedRef = useRef<HTMLDivElement>(null);
   const seed = useMemo(() => hashSeed(`${frameId}:${Date.now()}`), [frameId]);
 
   const compose = useCallback(() => composeStripCanvas(shots.current.filter((s): s is Shot => !!s), {
@@ -212,26 +218,41 @@ export default function BoothScreen() {
     footerText: caption, date: showDate ? stripDate() : undefined, seed,
   }), [frame, filterId, caption, showDate, seed]);
 
+  /** One live blob: URL at a time, created and revoked outside any state updater (StrictMode-safe). */
+  const setStripBlobUrl = useCallback((blob: Blob | null) => {
+    if (stripUrlRef.current) URL.revokeObjectURL(stripUrlRef.current);
+    stripUrlRef.current = blob && alive.current ? URL.createObjectURL(blob) : null;
+    setStripUrl(stripUrlRef.current);
+  }, []);
   const encode = useCallback(async (c: HTMLCanvasElement) => {
     const blob = await canvasToBlob(c);
+    if (!alive.current) return;
     stripBlob.current = blob;
-    setStripUrl((old) => { if (old) URL.revokeObjectURL(old); return URL.createObjectURL(blob); });
-  }, []);
-  useEffect(() => () => { setStripUrl((old) => { if (old) URL.revokeObjectURL(old); return null; }); }, []);
+    setStripBlobUrl(blob);
+  }, [setStripBlobUrl]);
+  useEffect(() => () => { if (stripUrlRef.current) URL.revokeObjectURL(stripUrlRef.current); stripUrlRef.current = null; }, []);
+
+  const retakeAll = useCallback(() => {
+    setSelected(null); setPrintPhase('none'); setSheetOpen(false); setCaptionShown(false); setStripBlobUrl(null); setStripCanvas(null);
+    clearShots(); setSetupKey((k) => k + 1);
+    if (session) send({ type: 'RETAKE' });
+    else { send({ type: 'RESET' }); send({ type: 'PICK' }); }
+  }, [session, send, clearShots, setStripBlobUrl]);
 
   const print = useCallback(async () => {
     send({ type: 'PRINT' });
     await loadStripFonts();
     const c = compose();
-    setStripCanvas(c); setStripUrl(null); setCaptionShown(false); setSheetOpen(false); setPrintPhase('none');
+    setStripCanvas(c); setStripBlobUrl(null); setCaptionShown(false); setSheetOpen(false); setPrintPhase('none');
     const spec = choreography.C12print;
     const run = play(spec, {
       pill: (ctx: StepContext) => { const k = ctx.step.params?.key; if (typeof k === 'string' && hasKey(k)) setPillKey(k); },
       strip: (ctx: StepContext) => {
         if (ctx.step.action === 'slotPrint') { setFeedMs(ctx.step.dur); setPrintPhase('feed'); }
         else if (ctx.step.action === 'toss') {
-          const r = slotRef.current?.getBoundingClientRect();
-          const fromScale = Number(ctx.step.params?.fromScale ?? 1);
+          // Start the arc exactly where the fed mini strip is on screen, at its scale (no size jump).
+          const fromScale = Number(ctx.step.params?.fromScale ?? FROM_SCALE);
+          const r = feedRef.current?.getBoundingClientRect() ?? slotRef.current?.getBoundingClientRect();
           if (r) setTossFrom({ x: r.left + r.width / 2, y: r.top + r.height / 2, scale: fromScale });
           setPrintPhase('toss');
         }
@@ -241,11 +262,12 @@ export default function BoothScreen() {
       editSheet: () => { setSheetOpen(true); },
     }, { slot: 'print', preload: async () => undefined });
     await run.finished;
+    if (run.state === 'cancelled' || !alive.current) return;
     setPrintPhase('toss'); setCaptionShown(true); setSheetOpen(true);
     setPillKey('booth.pill.tapStrip');
     await encode(c); // PNG encoding deferred until after the toss (§5.4)
     send({ type: 'CHOREO_DONE' });
-  }, [send, compose, play, encode]);
+  }, [send, compose, play, encode, setStripBlobUrl]);
 
   // Re-compose when the caption / date changes in the edit sheet.
   useEffect(() => {
@@ -264,6 +286,7 @@ export default function BoothScreen() {
     send({ type: 'EXPORT' });
     const run = play(choreography.C12export, { exportRing: () => { setSaveKey('booth.save.saving'); } }, { slot: 'export', preload: async () => undefined });
     await run.finished;
+    if (run.state === 'cancelled' || !alive.current) return;
     try {
       const a = document.createElement('a');
       a.href = stripUrl; a.download = fileName; a.rel = 'noopener';
@@ -291,7 +314,7 @@ export default function BoothScreen() {
   const live = state === 'ready' || state === 'countdown' || state === 'retake';
   const filled = previews.filter(Boolean).length;
   const showInApp = !!inApp && !inAppDismissed && (state === 'idle');
-  const stripStyle = { '--booth-from-scale': String(tossFrom.scale || 1) } as React.CSSProperties;
+  const stripStyle = { '--booth-from-scale': String(tossFrom.scale || FROM_SCALE) } as React.CSSProperties;
 
   return (
     <main className="app-scene booth" data-theme="booth-stripes" data-state={state} data-testid="booth">
@@ -355,7 +378,7 @@ export default function BoothScreen() {
                 className={`booth-video${mirror === 'mirror' ? ' is-mirrored' : ''}`}
                 style={{ filter: filterId === 'natural' ? undefined : `url(#booth-look-${filterId})` }} />
               <div className="booth-hud">
-                <Pill variant="status">{snap.context.paused ? t('booth.pill.paused') : t(pillKey)}</Pill>
+                <Pill variant="status" sparkle={!snap.context.paused && SPARKLE_PILLS.has(pillKey)}>{snap.context.paused ? t('booth.pill.paused') : t(pillKey)}</Pill>
                 {state === 'countdown' ? <span className="booth-counter">{t('booth.shotCounter', { index: Math.min(TOTAL, snap.context.shots + 1), total: TOTAL })}</span> : null}
               </div>
               <div className="booth-stamp">
@@ -394,18 +417,18 @@ export default function BoothScreen() {
           <button type="button" className="booth-coin" data-testid="booth-shutter" onClick={shutter}
             disabled={state !== 'ready' || !session} aria-label={t('booth.a11y.shutter')}>
             <TokenDrop play={tokenKey > 0} playKey={tokenKey}><span className="booth-coin__disc" aria-hidden="true">✦</span></TokenDrop>
-            <span className="booth-coin__label">{t('booth.landing.coin')}</span>
+            <span className="booth-coin__label">{t('booth.landing.coin')} <span aria-hidden="true">✦</span></span>
           </button>
         </div>
       </section>
 
       {state === 'review' ? (
         <section className="booth-card booth-review" data-testid="booth-review">
-          <h2 className="booth-card__title">{t('booth.tapAStrip')}</h2>
+          <h2 className="booth-card__title">{t('booth.tapAStrip')} <span aria-hidden="true">✦</span></h2>
           <div className="booth-grid">
             {previews.map((p, i) => (
               <motion.button key={i} type="button" className="booth-cell" layoutId={`shot-${i}`} data-testid={`booth-shot-${i}`}
-                initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={tw('move', 'inOutCubic', i * duration.micro)}
+                initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ ...tw('move', 'inOutCubic', i * duration.micro), layout: sp('modal') }}
                 onClick={() => setSelected(i)} aria-label={t('booth.a11y.shot', { index: i + 1 })}>
                 {p ? <img src={p} alt="" className={filterId === 'natural' ? undefined : 'booth-look'} style={{ filter: filterId === 'natural' ? undefined : `url(#booth-look-${filterId})` }} /> : null}
               </motion.button>
@@ -414,38 +437,44 @@ export default function BoothScreen() {
           {fileTarget !== null ? <FilePickers onFiles={(f) => void onFiles(f)} compact /> : null}
           <div className="booth-actions">
             <Pill variant="link" onClick={retakeAll}>{t('booth.retakeAll')}</Pill>
-            <button type="button" className="booth-primary" data-testid="booth-print" onClick={() => void print()} disabled={filled < TOTAL}>{t('booth.print')}</button>
+            <button type="button" className="booth-primary" data-testid="booth-print" onClick={() => void print()} disabled={filled < TOTAL}>{t('booth.print')} <span aria-hidden="true">✦</span></button>
           </div>
+          {/* Only the scrim fades out; the shared card unmounts at once so the grid cell FLIPs back on
+              spring.modal immediately (C12 review), not after an exit fade. */}
           <AnimatePresence>
             {selected !== null ? (
-              <motion.div className="booth-lightbox" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={tw('modal', 'standard')}>
-                <motion.div className="booth-lightbox__card" layoutId={`shot-${selected}`} transition={sp('modal')}>
-                  {previews[selected] ? <img src={previews[selected]!} alt={t('booth.a11y.shot', { index: selected + 1 })} /> : null}
-                </motion.div>
-                <div className="booth-actions">
-                  <Pill variant="action" onClick={() => retakeOne(selected)}>{t('booth.retakeOne')}</Pill>
-                  <Pill variant="link" onClick={() => setSelected(null)}>{t('booth.keep')}</Pill>
-                </div>
-              </motion.div>
+              <motion.div key="scrim" className="booth-lightbox__scrim" aria-hidden="true"
+                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={tw('modal', 'standard')} />
             ) : null}
           </AnimatePresence>
+          {selected !== null ? (
+            <div className="booth-lightbox" role="dialog" aria-modal="true" aria-label={t('booth.a11y.shot', { index: selected + 1 })}>
+              <motion.div className="booth-lightbox__card" layoutId={`shot-${selected}`} transition={sp('modal')}>
+                {previews[selected] ? <img src={previews[selected]!} alt={t('booth.a11y.shot', { index: selected + 1 })} /> : null}
+              </motion.div>
+              <motion.div className="booth-actions" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={tw('modal', 'standard')}>
+                <Pill variant="action" onClick={() => retakeOne(selected)}>{t('booth.retakeOne')}</Pill>
+                <Pill variant="link" onClick={() => setSelected(null)}>{t('booth.keep')}</Pill>
+              </motion.div>
+            </div>
+          ) : null}
         </section>
       ) : null}
 
       {state === 'printing' || state === 'decorate' || state === 'export' ? (
         <section className="booth-print" data-testid="booth-print-stage" style={stripStyle}>
-          <Pill variant="status">{t(pillKey)}</Pill>
+          <Pill variant="status" sparkle={SPARKLE_PILLS.has(pillKey)}>{t(pillKey)}</Pill>
           <div className="booth-printer" aria-hidden="true" style={{ background: pv.frame }}>
             <div ref={slotRef} className="booth-printer__slot" />
             {printPhase === 'feed' ? (
               <SlotPrint durationMs={feedMs} className="booth-printer__feed">
-                <CanvasHost canvas={stripCanvas} className="booth-strip booth-strip--mini" />
+                <div ref={feedRef}><CanvasHost canvas={stripCanvas} className="booth-strip booth-strip--mini" /></div>
               </SlotPrint>
             ) : null}
           </div>
           <div className="booth-landing">
             {printPhase === 'toss' ? (
-              <Toss from={tossFrom} restDeg={STRIP_FAN[0] ?? 0} arcMs={Number(choreography.C12print.steps.find((s) => s.action === 'toss')?.params?.arcMs ?? 600)}>
+              <Toss from={tossFrom} restDeg={STRIP_FAN[0] ?? 0} arcMs={TOSS_ARC_MS}>
                 {stripUrl
                   ? <img className="booth-strip" src={stripUrl} alt={t('booth.a11y.strip')} data-testid="booth-strip-img" />
                   : <CanvasHost canvas={stripCanvas} className="booth-strip" />}

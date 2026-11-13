@@ -10,10 +10,10 @@
  */
 import './player.css';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { choreography, hashSeed, type Spec, type TargetMap } from '../../motion/core';
+import { choreography, hashSeed, spring, type Spec, type TargetMap } from '../../motion/core';
 import { usePlay, SharedLightbox, LightboxThumb } from '../../motion/react';
-import { t, graphemeCount, type Voice } from '../../i18n';
-import { resolveMedia, type DaysPage, type GiftContentV1, type LetterPage, type MemoriesPage, type SongsPage } from '../../gift-schema';
+import { t, graphemeCount, pronounSetOf, type Voice } from '../../i18n';
+import { resolveMedia, safeHttpUrl, type DaysPage, type GiftContentV1, type LetterPage, type MemoriesPage, type SongsPage } from '../../gift-schema';
 import { recipientMachine, useMachine } from '../../machines';
 import { ContinueObject, DrawerPull, Drawer, LetterCard, MusicDock, Pill, Polaroid, polaroidTilt } from '../../ui';
 import { HangingBunting } from './art';
@@ -27,6 +27,12 @@ import { daysTogether, serviceOf } from './util';
 /** The memories deal for the envelope path: C2c's deal rows, re-based (spec as data). */
 const DEALS = subSpec(choreography.C2c as Spec, 'C2cDeals', ['C2.deal1', 'C2.deal2', 'C2.deal3', 'C2.stack4', 'C2.stack5', 'C2.stack6', 'C2.replayPill']);
 const OPENER_STATES = new Set(['landing', 'opening', 'prompt', 'revealing', 'treats', 'spreading']);
+
+/** G17 / P19: the continue object arrives with a nudge (x −9 px, scale 1.06 → 0 / 1 on spring.chromeNudge). */
+const CTA_NUDGE: Spec = {
+  id: 'G17nudge', title: 'continue object nudge', t0: 'chrome 2 (secondary chrome + 200 ms)', assets: [], reduced: 'opacity200',
+  steps: [{ name: 'G17.chromeNudge', at: 0, dur: spring.chromeNudge.settleMs, target: 'cta', action: 'chromeNudge' }],
+};
 
 export interface GiftPlayerProps {
   gift: GiftContentV1;
@@ -45,7 +51,7 @@ export function GiftPlayer({ gift, timeScale = 1, preview = false }: GiftPlayerP
   const state = snap.value;
   const ctx = snap.context;
   const seed = useMemo(() => hashSeed(gift.id ?? JSON.stringify(gift)), [gift]);
-  const voice: Voice = useMemo(() => ({ self: gift.names.self, you: gift.names.you, tone: gift.names.tone, recipientName: gift.names.to }), [gift]);
+  const voice: Voice = useMemo(() => ({ pronouns: pronounSetOf(gift.names.pronouns), self: gift.names.self, you: gift.names.you, tone: gift.names.tone, recipientName: gift.names.to }), [gift]);
   const letter = gift.pages.find((p): p is LetterPage => p.kind === 'letter');
   const photos = gift.pages.find((p): p is MemoriesPage => p.kind === 'memories')?.photos.slice(0, 6) ?? [];
   const songs = gift.pages.find((p): p is SongsPage => p.kind === 'songs')?.tracks ?? [];
@@ -75,6 +81,8 @@ export function GiftPlayer({ gift, timeScale = 1, preview = false }: GiftPlayerP
   const [dealt, setDealt] = useState(false);
   const [chrome, setChrome] = useState<0 | 1 | 2>(0);
   const [finale, setFinale] = useState(false);
+  /** C7.overlayUnmount reached: C13's t0 (the end actions fade in only now). */
+  const [cleared, setCleared] = useState(false);
   const [track, setTrack] = useState<number | null>(null);
   const earlyTap = useRef(-Infinity);
   const openedPhoto = useRef(0);
@@ -88,6 +96,21 @@ export function GiftPlayer({ gift, timeScale = 1, preview = false }: GiftPlayerP
     const b = setTimeout(() => setChrome(2), (G.chrome.secondaryMs + G.chrome.primaryMs) / timeScale);
     return () => { clearTimeout(a); clearTimeout(b); };
   }, [reachedReading]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // P19: nudge the continue object in as it mounts
+  useEffect(() => {
+    if (chrome !== 2 || !ctaRef.current) return;
+    const r = play(CTA_NUDGE, { cta: ctaRef }, { timeScale, slot: 'nudge' });
+    return () => r.cancel();
+  }, [chrome]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Focus follows the scene (keyboard / screen-reader users): the letter when reading starts.
+  const letterRegion = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (state !== 'reading' || !letterRegion.current) return;
+    const a = document.activeElement;
+    if (!a || a === document.body || !a.isConnected || (a as HTMLElement).closest?.('[inert]')) letterRegion.current.focus({ preventScroll: true });
+  }, [state]);
 
   // Envelope: memories deal in once the letter is typed (R → M in the §5.3 graph)
   const dealMemories = useCallback(() => {
@@ -134,7 +157,7 @@ export function GiftPlayer({ gift, timeScale = 1, preview = false }: GiftPlayerP
 
   const onSwap = useCallback(() => { send({ type: 'SWAP' }); if (!preview) writeDone(seed); }, [send, preview, seed]);
   const onReplaySwap = useCallback(() => {
-    setFinale(false); setChrome(0); setDealt(false); setTyping(false);
+    setFinale(false); setCleared(false); setChrome(0); setDealt(false); setTyping(false);
     send({ type: 'REPLAY' });
   }, [send]);
 
@@ -148,6 +171,7 @@ export function GiftPlayer({ gift, timeScale = 1, preview = false }: GiftPlayerP
   const inOpener = OPENER_STATES.has(state);
   // box: the letter waits for C2.letterPop; polaroids always wait for their deal
   const awaitPop = mechanic === 'box' && inOpener;
+  const armFinale = reachedReading && chrome >= 2;
   const songTitle = t('gift.songs.title', {}, voice);
 
   if (state === 'loading') return <main className="app-scene gift-player" data-theme={gift.theme}><p className="gift-loading">{t('gift.loading')}</p></main>;
@@ -158,7 +182,8 @@ export function GiftPlayer({ gift, timeScale = 1, preview = false }: GiftPlayerP
       <section className="gift-reading" aria-hidden={inOpener || state === 'end' || undefined} inert={inOpener || state === 'end' || undefined}>
         <div ref={reading.decor} className="gift-decor" aria-hidden="true"><HangingBunting /></div>
         {mechanic === 'box' && !inOpener ? <BoxBadge /> : null}
-        <div ref={reading.letter} className="gift-letter" data-await={awaitPop ? 'pop' : undefined} data-testid="gift-letter">
+        <div ref={(el) => { reading.letter.current = el; letterRegion.current = el; }} className="gift-letter" data-await={awaitPop ? 'pop' : undefined} data-testid="gift-letter"
+          tabIndex={-1} role="region" aria-label={t('gift.letter.eyebrow', {}, voice)}>
           {letter ? (
             <LetterCard
               eyebrow={t('gift.letter.eyebrow', {}, voice)} greeting={letter.greeting} body={letter.body} signature={letter.signature}
@@ -184,34 +209,34 @@ export function GiftPlayer({ gift, timeScale = 1, preview = false }: GiftPlayerP
           </div>
         ) : null}
 
+        {/* ---------- chrome (G17, hidden + inert under the lightbox and covers). Position: fixed; it sits here in
+            the DOM so the tab order is letter → photos → drawer pull → continue → replay. ---------- */}
+        {reachedReading || state === 'finale' ? (
+          <div className="gift-chrome" data-hidden={chromeHidden || undefined} inert={chromeHidden || undefined}>
+            {hasExtras && chrome >= 1 ? (
+              <div ref={pullRef} className="gift-chrome__pull" data-testid="gift-drawer-pull">
+                <DrawerPull onOpen={() => send({ type: 'OPEN_DRAWER' })} expanded={state === 'drawer'} />
+              </div>
+            ) : null}
+            {chrome >= 2 ? (
+              <div ref={ctaRef} className="gift-chrome__cta" data-testid="gift-continue" data-ready={ctx.readEnough || undefined} onClickCapture={onContinueCapture}>
+                <ContinueObject kind={mechanic === 'box' ? 'candy' : 'seal'} ready={ctx.readEnough} onContinue={() => startFinale()} guardText={t('gift.finale.tooltip', {}, voice)} />
+              </div>
+            ) : null}
+          </div>
+        ) : null}
         <div ref={reading.replayPill} className="gift-replaypill" data-await={dealt ? undefined : 'deal'}>
-          <Pill variant="hint" onClick={() => { if (reachedReading) { setChrome(0); setDealt(false); send({ type: 'REPLAY' }); } }}>{t('gift.pill.replay')}</Pill>
+          <Pill variant="hint" ariaLabel={t('common.replay')} onClick={() => { if (reachedReading) { setChrome(0); setDealt(false); send({ type: 'REPLAY' }); } }}>{t('gift.pill.replay')}</Pill>
         </div>
       </section>
-
-      {/* ---------- chrome (G17, hidden + inert under the lightbox and covers) ---------- */}
-      {reachedReading || state === 'finale' ? (
-        <div className="gift-chrome" data-hidden={chromeHidden || undefined} inert={chromeHidden || undefined}>
-          {hasExtras && chrome >= 1 ? (
-            <div ref={pullRef} className="gift-chrome__pull" data-testid="gift-drawer-pull">
-              <DrawerPull onOpen={() => send({ type: 'OPEN_DRAWER' })} expanded={state === 'drawer'} />
-            </div>
-          ) : null}
-          {chrome >= 2 ? (
-            <div ref={ctaRef} className="gift-chrome__cta" data-testid="gift-continue" data-ready={ctx.readEnough || undefined} onClickCapture={onContinueCapture}>
-              <ContinueObject kind={mechanic === 'box' ? 'candy' : 'seal'} ready={ctx.readEnough} onContinue={() => startFinale()} guardText={t('gift.finale.tooltip', {}, voice)} />
-            </div>
-          ) : null}
-        </div>
-      ) : null}
 
       {hasExtras ? (
         <Drawer open={state === 'drawer'} onOpenChange={(o) => { if (!o) send({ type: 'CLOSE' }); }} title={t('gift.more.drawerTitle', {}, voice)} closeLabel={t('a11y.closeDrawer')}>
           {songs.length ? (
             <MusicDock
               title={songTitle} tracks={songs} current={track} state="idle"
-              onSelect={(i) => { setTrack(i); const u = songs[i]?.url; if (u) window.open(u, '_blank', 'noopener'); }}
-              onToggle={() => { const i = track ?? 0; setTrack(i); const u = songs[i]?.url; if (u) window.open(u, '_blank', 'noopener'); }}
+              onSelect={(i) => { setTrack(i); const u = songs[i]?.url; if (safeHttpUrl(u)) window.open(u, '_blank', 'noopener'); }}
+              onToggle={() => { const i = track ?? 0; setTrack(i); const u = songs[i]?.url; if (safeHttpUrl(u)) window.open(u, '_blank', 'noopener'); }}
               labels={{
                 track: (n) => t('gift.songs.trackLabel', { number: n }, voice),
                 playing: t('gift.songs.playing', {}, voice),
@@ -255,13 +280,14 @@ export function GiftPlayer({ gift, timeScale = 1, preview = false }: GiftPlayerP
       ) : null}
 
       {/* ---------- C7 + C13 ---------- */}
-      {finale || state === 'end' ? (
-        <EndCard ready={state === 'end'} voice={voice} senderName={gift.names.from} seed={seed} timeScale={timeScale} preview={preview}
+      {armFinale || finale || state === 'end' ? (
+        <EndCard ready={state === 'end'} entrance={state === 'end' && (cleared || !finale)} voice={voice} senderName={gift.names.from} seed={seed} timeScale={timeScale} preview={preview}
           decorRef={endDecor} onReplaySwap={onReplaySwap} />
       ) : null}
-      {finale ? (
-        <FinaleOverlay seed={seed} timeScale={timeScale} targets={{ pull: pullRef, rail: railRef, cta: ctaRef, endDecor }}
-          onSwap={onSwap} onDone={() => setFinale(false)} />
+      {/* pre-mounted (idle) while the reader is on the letter, so the tap frame does no mount work */}
+      {armFinale || finale ? (
+        <FinaleOverlay go={finale} seed={seed} timeScale={timeScale} targets={{ pull: pullRef, rail: railRef, cta: ctaRef, endDecor }}
+          onSwap={onSwap} onCleared={() => setCleared(true)} onDone={() => setFinale(false)} />
       ) : null}
     </main>
   );

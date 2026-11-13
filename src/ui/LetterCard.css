@@ -9,7 +9,11 @@
 .ui-letter__tape { position: absolute; top: -10px; left: 37%; width: 26%; height: 22px; rotate: -5deg; background: var(--c-blush-700); opacity: .73; mix-blend-mode: multiply; }
 .ui-letter__eyebrow { position: relative; margin: 0 0 8px; font-family: var(--type-ui-eyebrow-family); font-weight: var(--type-ui-eyebrow-weight); font-size: var(--type-ui-eyebrow-size); line-height: var(--type-ui-eyebrow-line-height); letter-spacing: var(--type-ui-eyebrow-tracking); color: var(--c-ink-600); }
 .ui-letter__greeting { position: relative; margin: 0 0 6px; font-family: var(--letter-font, var(--type-letter-greeting-family)); font-weight: var(--type-letter-greeting-weight); font-size: var(--type-letter-greeting-size); line-height: var(--type-letter-greeting-line-height); }
-.ui-letter__body { position: relative; flex: 1; min-height: 0; overflow: auto; margin: 0; font-family: var(--letter-font, var(--type-letter-body-family)); font-size: var(--type-letter-body-size); line-height: var(--type-letter-body-line-height);
-  background-image: linear-gradient(to bottom, transparent calc(var(--type-letter-body-line-height) - 1px), var(--c-blush-100) 0); background-size: 100% var(--type-letter-body-line-height); background-attachment: local; }
-.ui-letter[data-font="scriptSignature"] .ui-letter__body { font-size: 16px; }
+.ui-letter__body { position: relative; flex: 1; min-height: 0; overflow: auto; margin: 0; padding-top: var(--vi-clip-pad-script); /* §3.4 rule 2: room for stacked marks (Ễ Ỗ) on line 1 inside the scroller */ font-family: var(--letter-font, var(--type-letter-body-family)); font-size: var(--type-letter-body-size); line-height: var(--type-letter-body-line-height);
+  background-image: linear-gradient(to bottom, transparent calc(var(--type-letter-body-line-height) - 1px), var(--c-blush-100) 0); background-size: 100% var(--type-letter-body-line-height); background-position: 0 var(--vi-clip-pad-script); background-attachment: local; }
 .ui-letter__signature { position: relative; margin: 14px 0 0; text-align: right; font-family: var(--font-script-signature); font-size: 28px; line-height: 1.7; padding-top: var(--vi-clip-pad-script); color: var(--c-berry-600); font-synthesis: none; }
+/* Playwrite VN's stacked marks reach ~1.72em above the baseline (ascent 31 px at 18 px) and overflow a
+   30 px line by ~8 px: give the first line twice the script clip pad inside the scroller (§3.4 rule 2). */
+.ui-letter[data-font="scriptSignature"] .ui-letter__body { --letter-clip-pad: calc(var(--vi-clip-pad-script) * 2); }
+.ui-letter__body { padding-top: var(--letter-clip-pad, var(--vi-clip-pad-script)); background-position: 0 var(--letter-clip-pad, var(--vi-clip-pad-script)); }
+

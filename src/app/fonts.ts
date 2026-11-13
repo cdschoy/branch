@@ -13,6 +13,11 @@ import '@fontsource/mali/400.css';
 import '@fontsource/mali/500.css';
 import '@fontsource/dancing-script/700.css';
 import '@fontsource/paytone-one/400.css';
+// hand.marker (Pangolin, 74/74): the creator's "handMarker" letter font and --type-hand-label. Only the
+// @font-face rules are registered here; the browser fetches the woff2 the first time text uses it.
+import '@fontsource/pangolin/vietnamese-400.css';
+import '@fontsource/pangolin/latin-400.css';
+import '@fontsource/pangolin/latin-ext-400.css';
 import playwriteVn from '@fontsource/playwrite-vn/files/playwrite-vn-latin-400-normal.woff2?url';
 
 export function registerFonts(): void {

@@ -1,16 +1,18 @@
 /**
  * App shell (owner: scaffold): MotionConfig (reduced motion), the single FxCanvas layer, and the hash
- * router. Heavy routes are lazy so the recipient route stays inside its JS budget (§7.7).
+ * router. Routes and the fx canvas (engine + emitters) are lazy; the recipient route's first-tap JS is
+ * still over the §7.7 budget (README → Known gaps), mostly React + Motion.
  */
-import { lazy, Suspense, useEffect } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import { MotionConfig } from 'motion/react';
 import { useRoute } from './router';
-import { FxCanvas, useReducedMotion } from '../motion/react';
+import { useReducedMotion } from '../motion/react';
 import { startTierProbe } from '../motion/core';
 import { t } from '../i18n';
 import Landing from './routes/Landing';
 import NotFound from './routes/NotFound';
 
+const FxCanvas = lazy(() => import('../motion/react/FxCanvas').then((m) => ({ default: m.FxCanvas })));
 const Lab = lazy(() => import('./routes/Lab'));
 const CreateScreen = lazy(() => import('./gift/CreateScreen'));
 const PlayerScreen = lazy(() => import('./gift/PlayerScreen'));
@@ -25,6 +27,17 @@ export default function App() {
   const reduced = useReducedMotion();
   useEffect(() => { document.title = t('app.title'); void startTierProbe(); }, []);
   useEffect(() => { window.scrollTo(0, 0); }, [route.name]);
+  // The recipient route needs no fx before its first tap (C1a's first canvas step is 870 ms after it),
+  // so the fx engine + emitters load on the first pointer / key input there; elsewhere at once.
+  const [fxOn, setFxOn] = useState(route.name !== 'gift');
+  useEffect(() => {
+    if (fxOn) return;
+    if (route.name !== 'gift') { setFxOn(true); return; }
+    const on = () => setFxOn(true);
+    const o = { capture: true, once: true } as const;
+    addEventListener('pointerdown', on, o); addEventListener('keydown', on, o);
+    return () => { removeEventListener('pointerdown', on, o); removeEventListener('keydown', on, o); };
+  }, [fxOn, route.name]);
 
   let page;
   switch (route.name) {
@@ -38,7 +51,7 @@ export default function App() {
   return (
     <MotionConfig reducedMotion={reduced ? 'always' : 'user'}>
       <Suspense fallback={<Loading />}>{page}</Suspense>
-      <FxCanvas />
+      {fxOn ? <Suspense fallback={null}><FxCanvas /></Suspense> : null}
     </MotionConfig>
   );
 }

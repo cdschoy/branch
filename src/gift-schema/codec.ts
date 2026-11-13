@@ -9,7 +9,7 @@
  * changes.
  */
 import type { GiftContentV1 } from './types';
-import { validateGift, migrate, type Result } from './validate';
+import { validateGift, migrate, LIMITS, type Result } from './validate';
 
 const te = new TextEncoder();
 const td = new TextDecoder();
@@ -32,6 +32,24 @@ async function pipe(bytes: Uint8Array, stream: CompressionStream | Decompression
   return new Uint8Array(await res.arrayBuffer());
 }
 
+/** Inflate with a hard cap: aborts as soon as the output passes `max` bytes (deflate-bomb guard). */
+async function inflateCapped(bytes: Uint8Array, max: number): Promise<Uint8Array | null> {
+  const reader = new Blob([bytes as BlobPart]).stream().pipeThrough(new DecompressionStream('deflate-raw')).getReader();
+  const chunks: Uint8Array[] = [];
+  let total = 0;
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    total += value.byteLength;
+    if (total > max) { void reader.cancel(); return null; }
+    chunks.push(value);
+  }
+  const out = new Uint8Array(total);
+  let o = 0;
+  for (const c of chunks) { out.set(c, o); o += c.byteLength; }
+  return out;
+}
+
 const canCompress = () => typeof CompressionStream === 'function';
 
 /** Sync, uncompressed ('j' prefix). */
@@ -48,11 +66,17 @@ export async function encodeGift(gift: GiftContentV1): Promise<string> {
 export async function decodeGift(encoded: string): Promise<Result<GiftContentV1>> {
   try {
     const kind = encoded[0];
+    if (kind !== 'j' && kind !== 'z') return { ok: false, error: 'unknown encoding' };
+    // base64url is 4 chars per 3 bytes; a 'j' body over the cap is refused before decoding.
+    if (encoded.length > Math.ceil((LIMITS.payloadBytes * 4) / 3) + 4) return { ok: false, error: 'too large' };
     const body = fromBase64Url(encoded.slice(1));
     let json: string;
     if (kind === 'j') json = td.decode(body);
-    else if (kind === 'z') json = td.decode(await pipe(body, new DecompressionStream('deflate-raw')));
-    else return { ok: false, error: 'unknown encoding' };
+    else {
+      const out = await inflateCapped(body, LIMITS.payloadBytes);
+      if (!out) return { ok: false, error: 'too large' };
+      json = td.decode(out);
+    }
     return validateGift(migrate(JSON.parse(json)));
   } catch (err) {
     return { ok: false, error: err instanceof Error ? err.message : 'decode failed' };

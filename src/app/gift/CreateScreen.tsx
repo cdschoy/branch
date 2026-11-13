@@ -8,7 +8,7 @@
 import './create.css';
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import strings from '@strings/vi.json';
-import designTokens from '@tokens/design-tokens.json';
+import { themes } from '../../motion/core/tokens';
 import { t, nfc, graphemeCount, type PronounSetId, type StringKey, type Voice } from '../../i18n';
 import { encodeGift, resolveMedia, type GiftContentV1, type LetterFont, type LetterPage, type MemoriesPage, type Photo, type SongsPage } from '../../gift-schema';
 import { creatorMachine, creatorGroup, letterOf, photosOf, peopleError, photosError, letterError, NAME_MAX, BODY_MAX, useMachine, type CreatorState } from '../../machines';
@@ -21,8 +21,8 @@ import { downscalePhoto, photoChars } from './photos';
 import { newGiftId, serviceOf } from './util';
 
 const DRAFT_KEY = 'gift:draft:v1';
-type ThemeKey = keyof typeof designTokens.themes;
-const THEMES = Object.keys(designTokens.themes) as ThemeKey[];
+type ThemeKey = keyof typeof themes;
+const THEMES = Object.keys(themes) as ThemeKey[];
 const PRONOUNS = Object.keys(strings.pronouns) as PronounSetId[];
 const FONTS: { id: LetterFont; key: StringKey }[] = [
   { id: 'handBody', key: 'create.letter.fontHandBody' },
@@ -55,9 +55,9 @@ function loadSaved(): Saved | null {
 }
 
 /** Pronoun set → the words stored on the gift (`none` uses the recipient's name for "you"). */
-function namesFor(set: PronounSetId, to: string): { self: string; you: string } {
+function namesFor(set: PronounSetId, to: string): { self: string; you: string; pronouns: PronounSetId } {
   const p = strings.pronouns[set];
-  return { self: p.self, you: set === 'none' ? (nfc(to).trim() || p.self) : p.you };
+  return { self: p.self, you: set === 'none' ? (nfc(to).trim() || p.self) : p.you, pronouns: set };
 }
 
 /** Replace one page kind (or remove it with null). */
@@ -100,7 +100,7 @@ export default function CreateScreen() {
 
   useEffect(() => { setTried(false); window.scrollTo(0, 0); }, [step]);
 
-  const voice: Voice = { self: draft.names.self, you: draft.names.you, tone: draft.names.tone, recipientName: draft.names.to || '…' };
+  const voice: Voice = { pronouns: pronoun, self: draft.names.self, you: draft.names.you, tone: draft.names.tone, recipientName: draft.names.to || '…' };
   const group = creatorGroup(step);
   const err: StringKey | null = step === 'people' ? peopleError(draft) : step === 'photos' ? photosError(draft, snap.context.consent) : step === 'letter' ? letterError(draft) : null;
   const next = () => { setTried(true); if (!err) send({ type: 'NEXT' }); };
@@ -198,7 +198,7 @@ function ThemeStep({ draft, edit }: StepProps) {
       {THEMES.map((id) => (
         <Choice key={id} name="theme" checked={draft.theme === id} onChange={() => edit({ theme: id })} testId={`theme-${id}`}>
           <span className="create__swatch" data-theme={id} aria-hidden="true"><i /><i /><i /></span>
-          <span>{t(designTokens.themes[id].labelKey as StringKey)}</span>
+          <span>{t(themes[id].labelKey as StringKey)}</span>
         </Choice>
       ))}
     </div>
