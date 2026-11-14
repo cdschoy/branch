@@ -17,3 +17,4 @@
 .lab-empty { text-align: center; color: var(--t-ink-muted); }
 .lab-missing { max-width: 1100px; margin: 24px auto 0; font-size: 14px; line-height: 1.5; color: var(--t-ink-muted); }
 .lab-missing ul { columns: 2 200px; padding-left: 18px; }
+.lab-locale { margin-inline-start: auto; }

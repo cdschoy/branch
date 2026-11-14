@@ -6,6 +6,10 @@
     <meta name="robots" content="noindex" />
     <meta name="theme-color" content="#F0E7D6" />
     <title>Quà tặng</title>
+    <script>
+      /* First paint in the saved language (app:locale:v1, see src/i18n): <html lang> + tab title before the bundle loads. */
+      try { var l = localStorage.getItem('app:locale:v1'); if (l === 'en') { document.documentElement.lang = 'en'; document.title = 'Gifts'; } } catch (e) {}
+    </script>
   </head>
   <body>
     <div id="root"></div>

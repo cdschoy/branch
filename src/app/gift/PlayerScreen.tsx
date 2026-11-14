@@ -9,6 +9,7 @@ import { loadGift, type GiftContentV1 } from '../../gift-schema';
 import { fontsReady } from '../fonts';
 import { hrefFor } from '../router';
 import { GiftPlayer } from './GiftPlayer';
+import { LocaleToggle } from '../LocaleToggle';
 import './player.css';
 
 const CRITICAL_FACES = ['400 18px Mali', '700 40px "Dancing Script"', '400 28px "Playwrite VN"', '500 16px "Be Vietnam Pro"'];
@@ -39,13 +40,15 @@ export default function PlayerScreen({ param }: { param: string }) {
     return () => { live = false; };
   }, [param]);
 
-  if (state.error) return <GiftError />;
-  if (!state.gift) {
-    return (
+  // The app chrome follows the viewer's language; the sender's own words (letter, captions, names) never change.
+  let body: ReactNode;
+  if (state.error) body = <GiftError />;
+  else if (!state.gift) {
+    body = (
       <main className="app-scene gift-player gift-player--msg" data-theme="garden-envelope" aria-busy="true">
         <p className="gift-loading">{t('gift.loading')}</p>
       </main>
     );
-  }
-  return <GiftBoundary><GiftPlayer gift={state.gift} /></GiftBoundary>;
+  } else body = <GiftBoundary><GiftPlayer gift={state.gift} /></GiftBoundary>;
+  return <>{body}<LocaleToggle floating /></>;
 }

@@ -59,6 +59,7 @@ Screenshots go to `test-results/e2e/`, or to the folder in `E2E_SHOTS`.
 | `booth` | full capture (real tempo), quick pace + reduced motion, in-app browser fallback; strip is exactly 600×1800 with no uploads |
 | `gift` | creator → link → envelope (C1) and box (C2) to finale and end card; reduced motion |
 | `lab` | every `#/lab` entry replayed in the gallery, isolated and under reduced motion; no console errors and no horizontal scroll |
+| `locale` | VI ⇄ EN switch on every route: no Vietnamese UI left in English, switch mid-spectacle, camera stream and creator draft survive, choice persists across reload |
 | `hardening` | deflate-bomb / over-limit / malformed gift links end on `gift-error`; no camera stream survives leaving mid-request; recipient-route JS ceiling |
 
 ## Structure
@@ -96,7 +97,7 @@ docs/             FRAMEWORK.md, reference-analysis/, fixtures/
   from the CSS variables in `tokens.css` (`--c-*` core colours, `--t-*` theme slots). Values that have
   no named token yet are collected in `src/motion/core/actions/params.ts` and `src/app/gift/params.ts`,
   each citing its FRAMEWORK row. They are TODO candidates for `motion-tokens.json`.
-- **All copy goes through `t()`** from `i18n/vi.json`. Text is NFC-normalised, and the typewriter splits
+- **All copy goes through `t()`** from `i18n/vi.json` (a `vi` and an `en` table). The VI | EN switch is on every route; the choice is saved in localStorage and sets `<html lang>`. Dates go through `formatDate` / `formatLunar`. Text is NFC-normalised, and the typewriter splits
   by grapheme with `Intl.Segmenter`.
 - **Fonts** come from the §3.4 verified list and load via `@fontsource` with the Vietnamese subset:
   Be Vietnam Pro, Mali, Dancing Script, Paytone One, Pangolin (hand.marker) and Playwrite VN.

@@ -1,9 +1,10 @@
 /** '#/' landing (owner: scaffold): choose Tặng quà (gift creator) or Photobooth. Original procedural art. */
 import './Landing.css';
-import { t } from '../../i18n';
-import { encodeGiftSync, sampleGift } from '../../gift-schema';
+import { getLocale, t } from '../../i18n';
+import { encodeGiftSync, sampleGiftFor } from '../../gift-schema';
 import { hrefFor } from '../router';
 import { ReducedMotionToggle } from '../ReducedMotionToggle';
+import { LocaleToggle } from '../LocaleToggle';
 
 function EnvelopeArt() {
   return (
@@ -35,9 +36,11 @@ function BoothArt() {
 }
 
 export default function Landing() {
-  const sampleHref = hrefFor({ name: 'gift', param: encodeGiftSync(sampleGift) });
+  // The sample gift's own content (letter, captions) follows the language the visitor is browsing in.
+  const sampleHref = hrefFor({ name: 'gift', param: encodeGiftSync(sampleGiftFor(getLocale())) });
   return (
     <main className="app-scene landing" data-theme="garden-envelope">
+      <div className="landing-top"><LocaleToggle /></div>
       <header className="landing-head">
         <h1 className="landing-title">{t('landing.title')}</h1>
         <p className="landing-sub">{t('landing.subtitle')}</p>

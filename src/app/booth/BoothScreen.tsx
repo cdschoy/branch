@@ -12,7 +12,7 @@
 import './BoothScreen.css';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
-import { t, hasKey, type StringKey } from '../../i18n';
+import { t, tIn, hasKey, formatDate, formatLunar, LOCALES, type StringKey } from '../../i18n';
 import {
   CameraError, canvasToBlob, captureSpec, composeStripCanvas, detectInApp, detectPlatform, FILTERS, FRAMES, frameById,
   grabFrame, lastCaptureAt, loadStripFonts, paletteVars, releaseShot, resolvePalette, retakeSpec, shotFromFile, shotPreviewUrl,
@@ -26,6 +26,8 @@ import { CountdownStamp, PhotoStrip, Pill, STRIP_FAN } from '../../ui';
 import { hrefFor } from '../router';
 import { CameraHelp, CanvasHost, ChipRow, CurtainArt, FilePickers, InAppSheet, LookFilterDefs } from './parts';
 import { CameraSuperseded, useCamera } from './useCamera';
+import { LocaleToggle } from '../LocaleToggle';
+import { useLocale } from '../useLocale';
 
 const TOTAL = 4;
 /** C12.toss starts from the mini strip the slot fed out (P37: scale .36); the feed renders at the same scale. */
@@ -36,10 +38,13 @@ const TOSS_ARC_MS = Number(C12_TOSS?.params?.arcMs ?? 600);
 const tw = (ms: number | DurationName, e: EasingName = 'outQuad', delayMs = 0) => ({ duration: sec(ms), ease: bez(e), delay: sec(delayMs) });
 const pad2 = (n: number) => String(n).padStart(2, '0');
 
+/** Strip footer in the active locale: vi "14/11/2026 · 24/9 âm lịch", en "14 Nov 2026 · Lunar day 24, month 9". */
 function stripDate(): string {
   const { d, m, y, lunar } = vnDateParts();
-  return t('booth.footer.date', { solar: t('format.date', { d: pad2(d), m: pad2(m), y }), lunar: t(lunar.leap ? 'format.lunarDateLeap' : 'format.lunarDate', { d: lunar.day, m: lunar.month }) });
+  return t('booth.footer.date', { solar: formatDate(d, m, y), lunar: formatLunar(lunar) });
 }
+/** The caption is the user's text once edited; until then it is the default in whichever language is active. */
+const isDefaultCaption = (c: string) => LOCALES.some((l) => tIn(l, 'booth.caption.default') === c);
 
 /** Diegetic pills that carry the decorative ✦ (rendered aria-hidden by Pill, never inside the copy). */
 const SPARKLE_PILLS: ReadonlySet<StringKey> = new Set<StringKey>(['booth.pill.coin', 'booth.pill.tapStrip']);
@@ -48,6 +53,7 @@ type PrintPhase = 'none' | 'feed' | 'toss';
 
 export default function BoothScreen() {
   const reduced = useReducedMotion();
+  const locale = useLocale();
   const play = usePlay();
   const [snap, send] = useMachine(boothMachine);
   const state = snap.value;
@@ -269,13 +275,16 @@ export default function BoothScreen() {
     send({ type: 'CHOREO_DONE' });
   }, [send, compose, play, encode, setStripBlobUrl]);
 
-  // Re-compose when the caption / date changes in the edit sheet.
+  // A language switch swaps an untouched default caption (user-typed captions are never translated).
+  useEffect(() => { setCaption((c) => (isDefaultCaption(c) ? t('booth.caption.default') : c)); }, [locale]);
+
+  // Re-compose when the caption / date (or the date's language) changes in the edit sheet.
   useEffect(() => {
     if (state !== 'decorate') return;
     const c = compose();
     setStripCanvas(c);
     void encode(c);
-  }, [caption, showDate]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [caption, showDate, locale]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ---- export (C12export) / share ----
   const [saveKey, setSaveKey] = useState<StringKey>('booth.save.cta');
@@ -323,6 +332,7 @@ export default function BoothScreen() {
         <a className="booth-back" href={hrefFor({ name: 'landing' })}>{t('common.back')}</a>
         <h1 className="booth-title">{t('booth.title')}</h1>
         <span className="booth-privacy">{t('booth.privacy')}</span>
+        <LocaleToggle className="booth-locale" />
       </header>
 
       {state === 'idle' && !showInApp ? (

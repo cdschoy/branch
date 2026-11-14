@@ -1,0 +1,33 @@
+/* Segmented VI | EN control. Colours, radii, shadows and type come from tokens.css. */
+:root {
+  /* outer size of the switch, so full-bleed scenes can keep their own top-corner controls clear of it */
+  --locale-toggle-w: calc(2 * 44px + 8px);
+  --locale-toggle-h: calc(44px + 6px);
+  --locale-toggle-inset: max(8px, env(safe-area-inset-top));
+}
+.locale-toggle {
+  --locale-opt: 44px; /* WCAG 2.5.5 target */
+  display: inline-flex; flex: none; padding: 2px; gap: 2px;
+  border-radius: var(--radius-pill); border: var(--border-hairline);
+  background: var(--t-surface, var(--c-cream-50)); box-shadow: var(--shadow-sm);
+  font-family: var(--type-ui-label-family); font-size: var(--type-ui-label-size); line-height: 1;
+  font-weight: 600; letter-spacing: var(--type-ui-label-tracking);
+}
+.locale-toggle__opt {
+  position: relative; display: inline-grid; place-items: center; min-width: var(--locale-opt); min-height: var(--locale-opt);
+  border-radius: var(--radius-pill); color: var(--t-ink-muted, var(--t-ink)); cursor: pointer; user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.locale-toggle__opt[data-on] { background: var(--t-accent, var(--c-accent-rose)); color: var(--c-accent-cream-on-forest); cursor: default; }
+.locale-toggle__opt:has(input:focus-visible) { outline: 2px solid var(--c-berry-500); outline-offset: 2px; }
+
+/* Full-bleed scenes (the gift player): pinned to the top inline-end corner inside the safe area, just
+   above scene chrome (--z-chrome) and the end card, but below the lightbox and covers. Like the rest of
+   the gift chrome it is hidden while the photo lightbox is open (C6, G10): visibility:hidden takes it out
+   of the tab order, the accessibility tree and hit-testing. The scene's own top-corner
+   controls (skip effects) sit beside it (player.css). */
+.locale-toggle--floating {
+  position: fixed; z-index: calc(var(--z-chrome) + 1);
+  top: var(--locale-toggle-inset); inset-inline-end: max(8px, env(safe-area-inset-right));
+}
+body:has(.gift-player[data-state="lightbox"]) .locale-toggle--floating { visibility: hidden; }

@@ -47,7 +47,9 @@
   line-height: var(--type-hand-label-line-height); letter-spacing: var(--type-hand-label-tracking); color: var(--t-ink-muted, var(--t-ink)); }
 .gift-sublabel { margin: 2px 0 0; text-align: center; font-family: var(--font-ui-sans); font-size: 14px; line-height: 1.5; color: var(--t-ink-muted, var(--t-ink)); }
 .gift-fallback { position: absolute; left: 50%; translate: -50% 0; top: calc(100% + 8dvh + 44px); }
-.gift-skip { position: absolute; z-index: 2; top: max(12px, env(safe-area-inset-top)); right: 12px; }
+/* Same row as the floating VI | EN switch (LocaleToggle.css), just to its left, so the two never overlap. */
+.gift-skip { position: absolute; z-index: 2; top: var(--locale-toggle-inset); right: calc(max(8px, env(safe-area-inset-right)) + var(--locale-toggle-w) + 8px);
+  min-height: var(--locale-toggle-h); display: flex; align-items: center; }
 
 /* envelope (C1) */
 .gift-hero { position: absolute; left: 50%; top: 44%; translate: -50% -50%; width: min(70vw, 280px); }

@@ -12,7 +12,7 @@ import './player.css';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { choreography, hashSeed, spring, type Spec, type TargetMap } from '../../motion/core';
 import { usePlay, SharedLightbox, LightboxThumb } from '../../motion/react';
-import { t, graphemeCount, pronounSetOf, type Voice } from '../../i18n';
+import { t, formatIsoDate, graphemeCount, pronounSetOf, type Voice } from '../../i18n';
 import { resolveMedia, safeHttpUrl, type DaysPage, type GiftContentV1, type LetterPage, type MemoriesPage, type SongsPage } from '../../gift-schema';
 import { recipientMachine, useMachine } from '../../machines';
 import { ContinueObject, DrawerPull, Drawer, LetterCard, MusicDock, Pill, Polaroid, polaroidTilt } from '../../ui';
@@ -249,7 +249,7 @@ export function GiftPlayer({ gift, timeScale = 1, preview = false }: GiftPlayerP
             <section className="gift-days" data-testid="gift-days">
               <h3 className="gift-days__title">{t('gift.more.days', {}, voice)}</h3>
               <p className="gift-days__count">{t('gift.days.together', { days: daysTogether(days) }, voice)}</p>
-              <p className="gift-days__since">{t('gift.days.since', { date: days.startDate.split('-').reverse().join('/') }, voice)}</p>
+              <p className="gift-days__since">{t('gift.days.since', { date: formatIsoDate(days.startDate) }, voice)}</p>
             </section>
           ) : null}
         </Drawer>

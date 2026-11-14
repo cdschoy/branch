@@ -9,6 +9,7 @@ import { useRoute } from './router';
 import { useReducedMotion } from '../motion/react';
 import { startTierProbe } from '../motion/core';
 import { t } from '../i18n';
+import { useLocale } from './useLocale';
 import Landing from './routes/Landing';
 import NotFound from './routes/NotFound';
 
@@ -25,7 +26,11 @@ function Loading() {
 export default function App() {
   const route = useRoute();
   const reduced = useReducedMotion();
-  useEffect(() => { document.title = t('app.title'); void startTierProbe(); }, []);
+  // Subscribing here re-renders the whole tree (no memo boundaries) when the language changes: text
+  // updates in place, nothing remounts, so running Director runs, the camera and drafts survive.
+  const locale = useLocale();
+  useEffect(() => { void startTierProbe(); }, []);
+  useEffect(() => { document.title = t('app.title'); }, [locale]);
   useEffect(() => { window.scrollTo(0, 0); }, [route.name]);
   // The recipient route needs no fx before its first tap (C1a's first canvas step is 870 ms after it),
   // so the fx engine + emitters load on the first pointer / key input there; elsewhere at once.

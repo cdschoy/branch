@@ -35,16 +35,68 @@ export interface Voice {
 const PRONOUN_PH = new Set(['self', 'Self', 'you', 'You', 'we', 'We', 'nha']);
 const PH = /\{(\w+)\}/g;
 
+// ---------------------------------------------------------------- locale store (React-free)
+/** localStorage key for the viewer's saved language choice. */
+export const LOCALE_KEY = 'app:locale:v1';
+export const LOCALES: readonly Locale[] = ['vi', 'en'];
+const isLocale = (x: unknown): x is Locale => x === 'vi' || x === 'en';
+
 let locale: Locale = 'vi';
-export const setLocale = (l: Locale): void => { locale = l; };
+const listeners = new Set<() => void>();
+
+/** BCP 47 tag for the active locale ('vi' | 'en'), for Intl / toLocale* calls and `<html lang>`. */
+export const localeTag = (l: Locale = locale): string => l;
+
+/**
+ * Switch the active locale: every later t() call reads the new table, `<html lang>` follows, and
+ * subscribers (the React `useLocale` hook) re-render. `persist` saves the choice for the next visit.
+ */
+export function setLocale(l: Locale, opts: { persist?: boolean } = {}): void {
+  if (!isLocale(l)) return;
+  if (opts.persist) { try { localStorage.setItem(LOCALE_KEY, l); } catch { /* private mode / blocked storage */ } }
+  if (typeof document !== 'undefined') document.documentElement.lang = localeTag(l);
+  if (l === locale) return;
+  locale = l;
+  for (const fn of [...listeners]) fn();
+}
 export const getLocale = (): Locale => locale;
+export function subscribeLocale(fn: () => void): () => void {
+  listeners.add(fn);
+  return () => { listeners.delete(fn); };
+}
+
+/** Saved choice → else a browser language starting with 'vi' → else 'vi' (product default). */
+export function detectLocale(): Locale {
+  try {
+    const saved = localStorage.getItem(LOCALE_KEY);
+    if (isLocale(saved)) return saved;
+  } catch { /* storage unavailable */ }
+  const nav = typeof navigator !== 'undefined' ? [...(navigator.languages ?? []), navigator.language] : [];
+  if (nav.some((x) => typeof x === 'string' && x.toLowerCase().startsWith('vi'))) return 'vi';
+  return 'vi';
+}
+/**
+ * Call once before the first render. Also follows a choice made in another open tab of the app
+ * (the `storage` event fires in every other same-origin tab when the key changes).
+ */
+export function initLocale(): Locale {
+  setLocale(detectLocale());
+  if (typeof window !== 'undefined' && !storageHooked) {
+    storageHooked = true;
+    window.addEventListener('storage', (e) => {
+      if (e.key === LOCALE_KEY && isLocale(e.newValue)) setLocale(e.newValue);
+    });
+  }
+  return locale;
+}
+let storageHooked = false;
 
 /** NFC-normalise (input from users, URLs and IMEs can arrive decomposed). */
 export const nfc = (s: string): string => s.normalize('NFC');
 
 const capFirst = (s: string): string => {
   const [first, ...rest] = graphemes(s);
-  return first === undefined ? s : first.toLocaleUpperCase('vi') + rest.join('');
+  return first === undefined ? s : first.toLocaleUpperCase(localeTag()) + rest.join('');
 };
 
 /** Resolve the pronoun placeholder values for a voice. */
@@ -88,7 +140,12 @@ export function voiceWords(voice: Voice = {}): Record<string, string> {
  * rather than blank. Placeholders without a value are left as-is.
  */
 export function t(key: StringKey, vars?: Vars, voice?: Voice): string {
-  const table = strings[locale] as Record<string, string>;
+  return tIn(locale, key, vars, voice);
+}
+
+/** t() in an explicit locale (e.g. the creator's "In Vietnamese: …" pronoun example in English mode). */
+export function tIn(l: Locale, key: StringKey, vars?: Vars, voice?: Voice): string {
+  const table = strings[l] as Record<string, string>;
   const raw = table[key] ?? (strings.vi as Record<string, string>)[key];
   if (raw === undefined) {
     if (import.meta.env?.DEV) console.warn(`[i18n] missing key ${String(key)}`);
@@ -105,9 +162,29 @@ export function t(key: StringKey, vars?: Vars, voice?: Voice): string {
 /** True when `key` exists in vi.json (for data-driven keys such as step params `{ key: 'booth.pill.smile' }`). */
 export const hasKey = (key: string): key is StringKey => key in strings.vi;
 
+// ---------------------------------------------------------------- formats
+const pad2 = (n: number): string => String(n).padStart(2, '0');
+const MONTH_KEYS = ['format.month.1', 'format.month.2', 'format.month.3', 'format.month.4', 'format.month.5', 'format.month.6',
+  'format.month.7', 'format.month.8', 'format.month.9', 'format.month.10', 'format.month.11', 'format.month.12'] as const satisfies readonly StringKey[];
+
+/** A calendar date in the active locale: vi "13/11/2026", en "13 Nov 2026" (month names from vi.json, not ICU). */
+export function formatDate(d: number, m: number, y: number): string {
+  if (locale === 'vi') return t('format.date', { d: pad2(d), m: pad2(m), y });
+  return t('format.date', { d, m: t(MONTH_KEYS[m - 1] ?? 'format.month.1'), y });
+}
+/** "YYYY-MM-DD" (a gift's stored date) → formatDate; anything else is returned unchanged. */
+export function formatIsoDate(iso: string): string {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso);
+  return m ? formatDate(Number(m[3]), Number(m[2]), Number(m[1])) : iso;
+}
+/** Lunar day/month: vi "5/10 âm lịch", en "Lunar day 5, month 10". */
+export const formatLunar = (lunar: { day: number; month: number; leap?: boolean }): string =>
+  t(lunar.leap ? 'format.lunarDateLeap' : 'format.lunarDate', { d: lunar.day, m: lunar.month });
+
 // ---------------------------------------------------------------- graphemes
 let gSeg: Intl.Segmenter | null = null;
 let wSeg: Intl.Segmenter | null = null;
+let wSegLocale: Locale | null = null;
 
 /** Split NFC text into user-perceived characters (P42 typewriter unit). "Nguyễn" → N g u y ễ n. */
 export function graphemes(text: string): string[] {
@@ -128,7 +205,7 @@ export const graphemeCount = (text: string): number => graphemes(text).length;
 export function words(text: string): { text: string; space: boolean }[] {
   const s = nfc(text);
   if (typeof Intl !== 'undefined' && 'Segmenter' in Intl) {
-    wSeg ??= new Intl.Segmenter('vi', { granularity: 'word' });
+    if (!wSeg || wSegLocale !== locale) { wSeg = new Intl.Segmenter(localeTag(), { granularity: 'word' }); wSegLocale = locale; }
     const out: { text: string; space: boolean }[] = [];
     for (const seg of wSeg.segment(s)) {
       const space = /^\s+$/.test(seg.segment);
@@ -142,8 +219,8 @@ export function words(text: string): { text: string; space: boolean }[] {
   return s.split(/(\s+)/).filter(Boolean).map((w) => ({ text: w, space: /^\s+$/.test(w) }));
 }
 
-/** Locale-aware caps for eyebrows (never CSS text-transform on Vietnamese). */
-export const upperVi = (s: string): string => nfc(s).toLocaleUpperCase('vi');
+/** Locale-aware caps for eyebrows (never CSS text-transform on Vietnamese); follows the active locale. */
+export const upperVi = (s: string): string => nfc(s).toLocaleUpperCase(localeTag());
 
 /**
  * Secret-answer comparison (§6.4, arch §6.3): NFC → lowercase vi → trim → collapse spaces.

@@ -21,3 +21,4 @@
 .la-flower ellipse { fill: var(--c-flower-peony-coral); } .la-flower-core { fill: var(--c-flower-sunflower); }
 .la-booth { fill: var(--c-blush-600); } .la-booth-window { fill: var(--c-plum-panel-top); } .la-lens { fill: var(--c-blush-200); }
 .la-slot { fill: var(--c-plum-panel-mid); } .la-strip { fill: var(--c-kraft-500); } .la-strip-cell { fill: var(--c-cream-300); }
+.landing-top { align-self: stretch; display: flex; justify-content: flex-end; margin: -16px 0 -14px; }

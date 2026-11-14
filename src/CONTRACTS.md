@@ -124,8 +124,10 @@ Path aliases (tsconfig + vite): `@/…` → `src/`, `@tokens/…` → `design-to
 
 - `t(key: StringKey, vars?: Record<string, string | number>, voice?: Voice): string`
 - `Voice` is `{ pronouns?: PronounSetId; self?; you?; we?; tone?: 'north' | 'south' | 'nhe' | 'nha'; recipientName? }`. It resolves `{self}`, `{Self}`, `{you}`, `{You}`, `{we}`, `{We}` and `{nha}`. For a gift, build it from `gift.names`: `{ self, you, tone, recipientName: to }`.
-- `setLocale('vi' | 'en')`, `hasKey(k)`, `voiceWords(voice)`
-- `nfc(s)`, `graphemes(s): string[]` (`Intl.Segmenter('vi')`), `graphemeCount(s)`, `words(s): { text, space }[]`, `upperVi(s)`
+- Locale store: `getLocale()`, `setLocale('vi' | 'en', { persist? })` (sets `<html lang>`, notifies), `subscribeLocale(fn): () => void`, `detectLocale()` (saved choice in localStorage `app:locale:v1` → browser language `vi*` → `'vi'`), `initLocale()` (called once in `main.tsx`), `LOCALES`, `localeTag()`. React components read it with `useLocale()` (`src/app/useLocale.ts`, useSyncExternalStore); `App` subscribes once so the whole tree re-renders text in place on a switch. The VI | EN switch is `src/app/LocaleToggle.tsx` (in each screen's header; `floating` in full-bleed scenes such as the gift player).
+- `tIn(locale, key, vars?, voice?)`: t() in an explicit locale. `hasKey(k)`, `voiceWords(voice)`
+- Locale-aware formats: `formatDate(d, m, y)` (vi `13/11/2026`, en `13 Nov 2026`), `formatIsoDate('YYYY-MM-DD')`, `formatLunar(lunar)` (vi `5/10 âm lịch`, en `Lunar day 5, month 10`). Never format visible dates by hand.
+- `nfc(s)`, `graphemes(s): string[]` (`Intl.Segmenter('vi')`), `graphemeCount(s)`, `words(s): { text, space }[]`, `upperVi(s)` (caps in the active locale)
 - `normaliseAnswer(s)`, `stripDiacritics(s)`, `answerMatches(input, expected)`
 
 ### `src/gift-schema` (React-free)
@@ -139,7 +141,7 @@ Path aliases (tsconfig + vite): `@/…` → `src/`, `@tokens/…` → `design-to
   - `decodeGift(s)` and `loadGift(param)` return `Promise<Result<GiftContentV1>>`.
   - `giftUrl(g)`
 - **Media:** `resolveMedia(ref)` handles `'ph:<n>'` (procedural placeholder photo) and `data:` URLs. Also `placeholderPhoto(n, w?, h?)`.
-- **Fixtures:** `fixtureEnvelopeMin` (from `docs/fixtures`) and `sampleGift` (the fixture plus 3 placeholder photos and a `days` page).
+- **Fixtures:** `fixtureEnvelopeMin` (from `docs/fixtures`) and `sampleGift` (the fixture plus 3 placeholder photos and a `days` page); their English twins `fixtureEnvelopeMinEn` / `sampleGiftEn`; `sampleGiftFor(locale)` picks one for the landing link. Sender-written content is never translated at runtime.
 - **Backend seam:** see `api/README.md`. Only `codec.ts` changes when the backend arrives.
 
 ### `src/machines`

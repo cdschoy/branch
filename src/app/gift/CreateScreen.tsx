@@ -9,13 +9,14 @@ import './create.css';
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import strings from '@strings/vi.json';
 import { themes } from '../../motion/core/tokens';
-import { t, nfc, graphemeCount, type PronounSetId, type StringKey, type Voice } from '../../i18n';
+import { t, tIn, getLocale, nfc, graphemeCount, type PronounSetId, type StringKey, type Voice } from '../../i18n';
 import { encodeGift, resolveMedia, type GiftContentV1, type LetterFont, type LetterPage, type MemoriesPage, type Photo, type SongsPage } from '../../gift-schema';
 import { creatorMachine, creatorGroup, letterOf, photosOf, peopleError, photosError, letterError, NAME_MAX, BODY_MAX, useMachine, type CreatorState } from '../../machines';
 import { LetterCard, Pill, Polaroid } from '../../ui';
 import { hrefFor, navigate } from '../router';
 import { EnvelopeClosed, BoxBody } from './art';
 import { GiftPlayer } from './GiftPlayer';
+import { LocaleToggle } from '../LocaleToggle';
 import { MEDIA, G } from './params';
 import { downscalePhoto, photoChars } from './photos';
 import { newGiftId, serviceOf } from './util';
@@ -74,6 +75,8 @@ function finalGift(d: GiftContentV1): GiftContentV1 {
   const letter: LetterPage = { kind: 'letter', greeting, body: nfc(l?.body ?? ''), signature, font: l?.font ?? 'handBody' };
   return {
     ...d,
+    // the language the sender wrote in (the recipient's player still follows the recipient's own choice)
+    locale: getLocale(),
     names: { ...d.names, from: nfc(d.names.from).trim(), to: nfc(d.names.to).trim() },
     pages: [letter, ...d.pages.filter((p) => p.kind !== 'letter')],
   };
@@ -110,8 +113,11 @@ export default function CreateScreen() {
     <main className="app-scene create" data-theme={draft.theme} data-step={step} data-testid="create">
       <header className="create__head">
         <a className="create__home" href={hrefFor({ name: 'landing' })}>{t('app.home')}</a>
-        <h1 className="create__title">{t('create.title')}</h1>
-        <span className="create__saved" aria-live="polite">{savedLabel ? t('common.draftSaved') : ''}</span>
+        <div className="create__titlebox">
+          <h1 className="create__title">{t('create.title')}</h1>
+          <span className="create__saved" aria-live="polite">{savedLabel ? t('common.draftSaved') : ''}</span>
+        </div>
+        <LocaleToggle className="create__locale" />
       </header>
       <ol className="create__groups" aria-label={t(STEP_KEY[step])}>
         {GROUPS.map((k, i) => (
@@ -240,7 +246,8 @@ function PeopleStep({ draft, edit, pronoun, setPronoun, voice }: StepProps & { p
             </Choice>
           ))}
         </div>
-        <p className="create__example">{t('create.pronouns.preview', { example: t('gift.landing.from', {}, voice) })}</p>
+        {/* The pronouns only change the Vietnamese wording, so the example is always shown in Vietnamese. */}
+        <p className="create__example">{t('create.pronouns.preview', { example: tIn('vi', 'gift.landing.from', {}, voice) })}</p>
       </fieldset>
       <fieldset className="create__fieldset">
         <legend className="create__label">{t('create.tone.prompt')}</legend>

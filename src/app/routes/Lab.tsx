@@ -9,6 +9,7 @@ import { labEntries, type LabEntry, type LabGroup } from '../lab/registry';
 import { PRIMITIVES, useReducedMotion } from '../../motion/react';
 import { hrefFor } from '../router';
 import { ReducedMotionToggle } from '../ReducedMotionToggle';
+import { LocaleToggle } from '../LocaleToggle';
 
 function LabCard({ entry, timeScale }: { entry: LabEntry; timeScale: number }) {
   const [replay, setReplay] = useState(0);
@@ -46,6 +47,7 @@ export default function Lab({ entry }: { entry?: string }) {
         <div className="lab-controls">
           <button type="button" className="lab-chip" aria-pressed={timeScale === 3} onClick={() => setTimeScale((s) => (s === 1 ? 3 : 1))}>{t('lab.speed', { speed: timeScale })}</button>
           <ReducedMotionToggle />
+          <LocaleToggle className="lab-locale" />
         </div>
         {!entry ? (
           <div className="lab-filters" role="group">

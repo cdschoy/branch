@@ -3,16 +3,17 @@ import { useEffect, useRef, useState } from 'react';
 import type { LabEntry } from './registry';
 import { choreography, type Spec } from '../../motion/core';
 import { usePlay } from '../../motion/react';
-import { graphemes, t } from '../../i18n';
+import { getLocale, graphemes, t } from '../../i18n';
 import { LetterCard } from '../../ui';
-import { fixtureEnvelopeMin, type LetterPage } from '../../gift-schema';
+import { fixtureEnvelopeMin, fixtureEnvelopeMinEn, type LetterPage } from '../../gift-schema';
 
 function DirectorDemo({ timeScale }: { timeScale: number }) {
   const play = usePlay();
   const scrim = useRef<HTMLDivElement>(null);
   const letter = useRef<HTMLDivElement>(null);
   const [log, setLog] = useState<string[]>([]);
-  const page = fixtureEnvelopeMin.pages[0] as LetterPage;
+  // sample sender content in the browsing language (like the landing sample gift)
+  const page = (getLocale() === 'en' ? fixtureEnvelopeMinEn : fixtureEnvelopeMin).pages[0] as LetterPage;
   useEffect(() => {
     const run = play(choreography.C4open, {
       scrim, letter, chips: null, hintPill: () => undefined,
@@ -51,7 +52,7 @@ function GraphemeDemo() {
   const name = 'Nguyễn Thị Ánh Dương';
   return (
     <div style={{ display: 'grid', gap: 8, justifyItems: 'center', padding: 8 }}>
-      <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '2px 10px', fontFamily: 'var(--font-hand-body)', fontSize: 20, lineHeight: 1.6 }}>
+      <div lang="vi" style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '2px 10px', fontFamily: 'var(--font-hand-body)', fontSize: 20, lineHeight: 1.6 }}>
         {name.normalize('NFD').split(' ').map((word, w) => (
           <span key={w} style={{ display: 'inline-flex', gap: 2, whiteSpace: 'nowrap' }}>
             {graphemes(word).map((g, i) => <span key={i} style={{ outline: '1px dashed var(--c-blush-ring)', padding: '0 2px' }}>{g}</span>)}
@@ -59,7 +60,7 @@ function GraphemeDemo() {
         ))}
       </div>
       <p style={{ margin: 0, fontFamily: 'var(--font-hand-body)', lineHeight: 1.6 }}>{t('gift.landing.from', {}, { pronouns: 'anh-em', tone: 'north' })}</p>
-      <p style={{ margin: 0, fontFamily: 'var(--font-script-signature)', fontSize: 22, lineHeight: 1.8 }}>Thương em nhiều, Minh</p>
+      <p style={{ margin: 0, fontFamily: 'var(--font-script-signature)', fontSize: 22, lineHeight: 1.8 }}>{t('lab.core.signature')}</p>
     </div>
   );
 }
